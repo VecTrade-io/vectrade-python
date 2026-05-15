@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vectrade"
+version = "0.1.0"
+description = "Official Python SDK for the VecTrade financial data and AI platform"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [
+    { name = "VecTrade", email = "sdk@vectrade.io" },
+]
+keywords = ["finance", "trading", "api", "sdk", "ai", "market-data", "stocks"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx>=0.25.0,<1.0",
+    "pydantic>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=1.5"]
+telemetry = ["opentelemetry-api>=1.20", "opentelemetry-sdk>=1.20"]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.0",
+    "respx>=0.20",
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "hypothesis>=6.0",
+    "pytest-benchmark>=4.0",
+]
+
+[project.urls]
+Homepage = "https://vectrade.io"
+Documentation = "https://docs.vectrade.io/sdks/python"
+Repository = "https://github.com/VecTrade-io/vectrade-python"
+Changelog = "https://github.com/VecTrade-io/vectrade-python/blob/main/CHANGELOG.md"
+Issues = "https://github.com/VecTrade-io/vectrade-python/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vectrade"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B", "A", "C4", "PT", "RUF"]
+ignore = ["S101"]  # Allow assert in tests
+
+[tool.ruff.lint.isort]
+known-first-party = ["vectrade"]
+
+[tool.mypy]
+strict = true
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["src/vectrade"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "@overload",
+]
