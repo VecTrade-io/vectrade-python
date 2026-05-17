@@ -18,31 +18,16 @@ class Insider:
         self._http = http
 
     def transactions(self, symbol: str, *, limit: int = 20) -> list[InsiderTransaction]:
-        """Get recent insider transactions for a symbol.
-
-        Args:
-            symbol: Stock ticker symbol.
-            limit: Maximum number of transactions to return.
-
-        Returns:
-            List of InsiderTransaction (most recent first).
-        """
-        response = self._http.get(
-            f"/vq/insider/{encode_path_param(symbol)}/transactions", params={"limit": str(limit)}
-        )
+        """Get recent insider transactions for a symbol."""
+        response = self._http.get(f"/vq/insider/{encode_path_param(symbol)}")
         response.raise_for_status()
-        return [InsiderTransaction.model_validate(t) for t in response.json()["data"]]
+        data = response.json()
+        trades = data.get("trades", [])[:limit]
+        return [InsiderTransaction.model_validate(t) for t in trades]
 
     def summary(self, symbol: str) -> InsiderSummary:
-        """Get insider trading summary for a symbol.
-
-        Args:
-            symbol: Stock ticker symbol.
-
-        Returns:
-            InsiderSummary with net buy/sell over recent periods.
-        """
-        response = self._http.get(f"/vq/insider/{encode_path_param(symbol)}/summary")
+        """Get insider trading summary for a symbol."""
+        response = self._http.get(f"/vq/insider/{encode_path_param(symbol)}")
         response.raise_for_status()
         return InsiderSummary.model_validate(response.json())
 
@@ -55,14 +40,14 @@ class AsyncInsider:
 
     async def transactions(self, symbol: str, *, limit: int = 20) -> list[InsiderTransaction]:
         """Get recent insider transactions for a symbol."""
-        response = await self._http.get(
-            f"/vq/insider/{encode_path_param(symbol)}/transactions", params={"limit": str(limit)}
-        )
+        response = await self._http.get(f"/vq/insider/{encode_path_param(symbol)}")
         response.raise_for_status()
-        return [InsiderTransaction.model_validate(t) for t in response.json()["data"]]
+        data = response.json()
+        trades = data.get("trades", [])[:limit]
+        return [InsiderTransaction.model_validate(t) for t in trades]
 
     async def summary(self, symbol: str) -> InsiderSummary:
         """Get insider trading summary for a symbol."""
-        response = await self._http.get(f"/vq/insider/{encode_path_param(symbol)}/summary")
+        response = await self._http.get(f"/vq/insider/{encode_path_param(symbol)}")
         response.raise_for_status()
         return InsiderSummary.model_validate(response.json())

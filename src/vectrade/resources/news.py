@@ -19,33 +19,25 @@ class News:
 
     def list(
         self,
+        symbol: str,
         *,
-        symbols: list[str] | None = None,
-        category: str | None = None,
         limit: int = 20,
     ) -> list[NewsArticle]:
-        """Get latest financial news.
+        """Get latest financial news for a symbol.
 
         Args:
-            symbols: Filter by ticker symbols.
-            category: Filter by category (e.g., "earnings", "macro", "crypto").
+            symbol: Ticker symbol (e.g., "AAPL").
             limit: Number of articles to return (max 100).
         """
-        params: dict[str, str] = {"limit": str(limit)}
-        if symbols:
-            params["symbols"] = ",".join(symbols)
-        if category:
-            params["category"] = category
-
-        response = self._http.get("/vq/news", params=params)
+        response = self._http.get(f"/vq/news/{encode_path_param(symbol)}")
         response.raise_for_status()
-        return [NewsArticle.model_validate(item) for item in response.json()["data"]]
+        data = response.json()
+        articles = data.get("articles", [])[:limit]
+        return [NewsArticle.model_validate(item) for item in articles]
 
-    def get(self, article_id: str) -> NewsArticle:
-        """Get a single news article by ID."""
-        response = self._http.get(f"/vq/news/{encode_path_param(article_id)}")
-        response.raise_for_status()
-        return NewsArticle.model_validate(response.json())
+    def get(self, symbol: str) -> list[NewsArticle]:
+        """Get news articles for a symbol."""
+        return self.list(symbol)
 
 
 class AsyncNews:
@@ -56,22 +48,17 @@ class AsyncNews:
 
     async def list(
         self,
+        symbol: str,
         *,
-        symbols: list[str] | None = None,
-        category: str | None = None,
         limit: int = 20,
     ) -> list[NewsArticle]:
-        params: dict[str, str] = {"limit": str(limit)}
-        if symbols:
-            params["symbols"] = ",".join(symbols)
-        if category:
-            params["category"] = category
-
-        response = await self._http.get("/vq/news", params=params)
+        """Get latest financial news for a symbol."""
+        response = await self._http.get(f"/vq/news/{encode_path_param(symbol)}")
         response.raise_for_status()
-        return [NewsArticle.model_validate(item) for item in response.json()["data"]]
+        data = response.json()
+        articles = data.get("articles", [])[:limit]
+        return [NewsArticle.model_validate(item) for item in articles]
 
-    async def get(self, article_id: str) -> NewsArticle:
-        response = await self._http.get(f"/vq/news/{encode_path_param(article_id)}")
-        response.raise_for_status()
-        return NewsArticle.model_validate(response.json())
+    async def get(self, symbol: str) -> list[NewsArticle]:
+        """Get news articles for a symbol."""
+        return await self.list(symbol)

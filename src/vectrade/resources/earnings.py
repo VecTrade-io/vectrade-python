@@ -28,10 +28,12 @@ class Earnings:
             List of EarningsResult (most recent first).
         """
         response = self._http.get(
-            f"/vq/earnings/{encode_path_param(symbol)}/history", params={"limit": str(limit)}
+            f"/vq/earnings/{encode_path_param(symbol)}"
         )
         response.raise_for_status()
-        return [EarningsResult.model_validate(e) for e in response.json()["data"]]
+        data = response.json()
+        history = data.get("history", [])[:limit]
+        return [EarningsResult.model_validate(e) for e in history]
 
     def calendar(
         self, *, from_date: str | None = None, to_date: str | None = None
@@ -65,10 +67,12 @@ class AsyncEarnings:
     async def history(self, symbol: str, *, limit: int = 8) -> list[EarningsResult]:
         """Get historical earnings results for a symbol."""
         response = await self._http.get(
-            f"/vq/earnings/{encode_path_param(symbol)}/history", params={"limit": str(limit)}
+            f"/vq/earnings/{encode_path_param(symbol)}"
         )
         response.raise_for_status()
-        return [EarningsResult.model_validate(e) for e in response.json()["data"]]
+        data = response.json()
+        history = data.get("history", [])[:limit]
+        return [EarningsResult.model_validate(e) for e in history]
 
     async def calendar(
         self, *, from_date: str | None = None, to_date: str | None = None

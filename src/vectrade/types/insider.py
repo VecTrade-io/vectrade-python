@@ -2,31 +2,34 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class InsiderTransaction(BaseModel):
     """Individual insider transaction."""
 
-    symbol: str
-    insider_name: str
-    title: str
-    transaction_type: str  # "buy", "sell", "exercise"
-    shares: int
-    price: float
-    total_value: float
-    shares_owned_after: int
-    filed_at: str
+    model_config = {"populate_by_name": True}
+
+    insider_name: str = Field(validation_alias="insider")
+    position: str | None = None
+    transaction_type: str | None = Field(default=None, validation_alias="transaction_type")
+    shares: int | None = None
+    total_value: float | None = Field(default=None, validation_alias="value")
+    transaction_date: str | None = None
+    ownership: str | None = None
+    description: str | None = None
 
 
 class InsiderSummary(BaseModel):
-    """Insider trading summary over recent periods."""
+    """Insider trading summary."""
 
-    symbol: str
-    net_shares_30d: int
-    net_value_30d: float
-    net_shares_90d: int
-    net_value_90d: float
-    buy_count_90d: int
-    sell_count_90d: int
-    most_recent_transaction: InsiderTransaction | None = None
+    model_config = {"populate_by_name": True}
+
+    symbol: str = Field(validation_alias="ticker")
+    buy_count: int = 0
+    sell_count: int = 0
+    exercise_count: int = 0
+    buy_volume: int = 0
+    sell_volume: int = 0
+    net_trades: int = 0
+    count: int = 0

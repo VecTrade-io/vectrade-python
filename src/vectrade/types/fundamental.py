@@ -2,28 +2,33 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FundamentalResponse(BaseModel):
     """Company fundamental data."""
 
-    symbol: str
-    company_name: str
-    sector: str | None = None
-    industry: str | None = None
+    model_config = {"populate_by_name": True}
+
+    symbol: str = Field(validation_alias="ticker")
+    company_name: str = Field(validation_alias="companyName")
+    market: str | None = None
     market_cap: float | None = None
-    pe_ratio: float | None = None
-    forward_pe: float | None = None
-    eps: float | None = None
-    dividend_yield: float | None = None
-    beta: float | None = None
-    fifty_two_week_high: float | None = None
-    fifty_two_week_low: float | None = None
-    avg_volume: int | None = None
-    shares_outstanding: int | None = None
+    price: float | None = None
+    change: float | None = None
+    change_pct: float | None = Field(default=None, validation_alias="change_percent")
+    volume: int | None = None
+    previous_close: float | None = Field(default=None, validation_alias="prevClose")
+    day_high: float | None = Field(default=None, validation_alias="high")
+    day_low: float | None = Field(default=None, validation_alias="low")
+    day_open: float | None = Field(default=None, validation_alias="open")
+    fifty_two_week_high: float | None = Field(default=None, validation_alias="max52")
+    fifty_two_week_low: float | None = Field(default=None, validation_alias="min52")
+    sma50: float | None = None
+    sma200: float | None = None
+    timestamp: datetime | None = None
 
 
 class IncomeStatement(BaseModel):

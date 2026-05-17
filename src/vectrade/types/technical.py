@@ -3,32 +3,23 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
-from pydantic import BaseModel
-
-
-class CandleData(BaseModel):
-    """OHLCV candle data."""
-
-    timestamp: datetime
-    open: float
-    high: float
-    low: float
-    close: float
-    volume: int
-
-
-class IndicatorValue(BaseModel):
-    """A computed indicator value at a specific timestamp."""
-
-    timestamp: datetime
-    value: float
+from pydantic import BaseModel, Field
 
 
 class TechnicalResponse(BaseModel):
-    """Technical analysis response with candles and indicators."""
+    """Technical analysis response with computed indicators."""
 
-    symbol: str
-    interval: str
-    candles: list[CandleData]
-    indicators: dict[str, list[IndicatorValue]] = {}
+    model_config = {"populate_by_name": True}
+
+    symbol: str = Field(validation_alias="ticker")
+    technical_score: int | None = None
+    rsi_14: float | None = None
+    macd: dict[str, Any] | None = None
+    bollinger_bands: dict[str, Any] | None = None
+    moving_averages: dict[str, Any] | None = None
+    indicators: dict[str, Any] | None = None
+    support_resistance: dict[str, Any] | None = None
+    summary: dict[str, Any] | None = None
+    timestamp: datetime | None = None
