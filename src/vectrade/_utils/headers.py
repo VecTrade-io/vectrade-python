@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 # Header constants — centralized to avoid hardcoding across modules
 HEADER_API_KEY = "X-API-Key"
 HEADER_AUTHORIZATION = "Authorization"

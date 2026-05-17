@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Protocol
-
-import httpx
+from typing import Any, Callable, Protocol
 
 
 @dataclass
@@ -103,6 +102,7 @@ def _wrap_middleware(
 ) -> Callable[[RequestContext], ResponseContext]:
     def wrapped(req: RequestContext) -> ResponseContext:
         return mw(req, next_handler)
+
     return wrapped
 
 
@@ -112,6 +112,7 @@ def _wrap_async_middleware(
 ) -> Callable[[RequestContext], Awaitable[ResponseContext]]:
     async def wrapped(req: RequestContext) -> ResponseContext:
         return await mw(req, next_handler)
+
     return wrapped
 
 
@@ -133,9 +134,7 @@ class LoggingMiddleware:
             self._logger.debug(f"→ {request.method} {request.url}")
         response = call_next(request)
         if self._logger:
-            self._logger.debug(
-                f"← {response.status_code} ({response.elapsed_ms:.1f}ms)"
-            )
+            self._logger.debug(f"← {response.status_code} ({response.elapsed_ms:.1f}ms)")
         return response
 
 
@@ -159,6 +158,7 @@ class IdempotencyMiddleware:
 
     def __init__(self, key_generator: Callable[[], str] | None = None) -> None:
         import uuid
+
         self._generate = key_generator or (lambda: str(uuid.uuid4()))
 
     def __call__(

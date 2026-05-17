@@ -47,12 +47,14 @@ class OpenTelemetryMiddleware:
     def _get_tracer(self) -> Any:
         if self._tracer is None:
             from opentelemetry import trace
+
             self._tracer = trace.get_tracer(self._tracer_name)
         return self._tracer
 
     def _get_meter(self) -> Any:
         if self._meter is None:
             from opentelemetry import metrics
+
             self._meter = metrics.get_meter(self._meter_name)
             self._request_counter = self._meter.create_counter(
                 "vectrade.sdk.requests",
@@ -79,8 +81,6 @@ class OpenTelemetryMiddleware:
         tracer = self._get_tracer()
         self._get_meter()
         from opentelemetry import trace
-        from opentelemetry.context import attach, detach
-        from opentelemetry.trace.propagation import set_span_in_context
 
         span_name = f"vectrade.{request.method} {request.url.split('/')[-1]}"
 
@@ -91,6 +91,7 @@ class OpenTelemetryMiddleware:
             # Inject trace context into outgoing headers for distributed tracing
             try:
                 from opentelemetry.propagate import inject
+
                 inject(request.headers)
             except ImportError:
                 pass
@@ -146,6 +147,7 @@ class OpenTelemetryMiddleware:
 def _get_sdk_version() -> str:
     try:
         from vectrade._version import __version__
+
         return __version__
     except ImportError:
         return "unknown"

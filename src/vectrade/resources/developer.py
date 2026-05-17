@@ -141,7 +141,9 @@ class AsyncDeveloper:
         return response.json()
 
     async def get_daily_usage(self, *, days: int = 30) -> list[dict[str, Any]]:
-        response = await self._http.get("/vq/developer/usage/daily", params={"days": str(min(days, 90))})
+        response = await self._http.get(
+            "/vq/developer/usage/daily", params={"days": str(min(days, 90))}
+        )
         response.raise_for_status()
         return response.json()
 

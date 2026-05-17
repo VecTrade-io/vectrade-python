@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import httpx
 
@@ -32,8 +33,8 @@ from vectrade._utils.config import (
     resolve_timeout,
 )
 from vectrade._utils.headers import (
-    HEADER_API_KEY,
     HEADER_ACCEPT,
+    HEADER_API_KEY,
     HEADER_REQUEST_ID,
     HEADER_USER_AGENT,
     ResponseMetadata,
@@ -49,7 +50,7 @@ from vectrade._version import __version__
 _RETRY_COUNT_ATTR = "_vectrade_retries"
 from vectrade.resources.ai import AI, AsyncAI
 from vectrade.resources.analyst import Analyst, AsyncAnalyst
-from vectrade.resources.developer import Developer, AsyncDeveloper
+from vectrade.resources.developer import AsyncDeveloper, Developer
 from vectrade.resources.earnings import AsyncEarnings, Earnings
 from vectrade.resources.fundamentals import AsyncFundamentals, Fundamentals
 from vectrade.resources.insider import AsyncInsider, Insider
@@ -284,8 +285,11 @@ class VecTrade(_BaseClient):
             def terminal_handler(ctx: RequestContext) -> ResponseContext:
                 nonlocal _captured_response
                 resp = self._execute_with_retry(
-                    ctx.method, path, json=ctx.body,
-                    params=ctx.params or None, headers=ctx.headers,
+                    ctx.method,
+                    path,
+                    json=ctx.body,
+                    params=ctx.params or None,
+                    headers=ctx.headers,
                     timeout=timeout,
                 )
                 _captured_response = resp
@@ -298,11 +302,15 @@ class VecTrade(_BaseClient):
                 )
 
             self._middleware_stack.execute(req_ctx, terminal_handler)
-            assert _captured_response is not None  # noqa: S101
+            assert _captured_response is not None
             return _captured_response
 
         return self._execute_with_retry(
-            method, path, json=json, params=params, headers=extra_headers,
+            method,
+            path,
+            json=json,
+            params=params,
+            headers=extra_headers,
             timeout=timeout,
         )
 
@@ -343,9 +351,7 @@ class VecTrade(_BaseClient):
                 # Attach retry count for transparency (§12.4)
                 setattr(response, _RETRY_COUNT_ATTR, attempt)
                 # Populate response metadata
-                self._last_response_metadata = ResponseMetadata.from_headers(
-                    dict(response.headers)
-                )
+                self._last_response_metadata = ResponseMetadata.from_headers(dict(response.headers))
                 return response
 
             # Retryable error
@@ -458,8 +464,11 @@ class AsyncVecTrade(_BaseClient):
             async def terminal_handler(ctx: RequestContext) -> ResponseContext:
                 nonlocal _captured_response
                 resp = await self._execute_with_retry(
-                    ctx.method, path, json=ctx.body,
-                    params=ctx.params or None, headers=ctx.headers,
+                    ctx.method,
+                    path,
+                    json=ctx.body,
+                    params=ctx.params or None,
+                    headers=ctx.headers,
                     timeout=timeout,
                 )
                 _captured_response = resp
@@ -472,11 +481,15 @@ class AsyncVecTrade(_BaseClient):
                 )
 
             await self._middleware_stack.execute(req_ctx, terminal_handler)
-            assert _captured_response is not None  # noqa: S101
+            assert _captured_response is not None
             return _captured_response
 
         return await self._execute_with_retry(
-            method, path, json=json, params=params, headers=extra_headers,
+            method,
+            path,
+            json=json,
+            params=params,
+            headers=extra_headers,
             timeout=timeout,
         )
 
@@ -519,9 +532,7 @@ class AsyncVecTrade(_BaseClient):
                 # Attach retry count for transparency (§12.4)
                 setattr(response, _RETRY_COUNT_ATTR, attempt)
                 # Populate response metadata
-                self._last_response_metadata = ResponseMetadata.from_headers(
-                    dict(response.headers)
-                )
+                self._last_response_metadata = ResponseMetadata.from_headers(dict(response.headers))
                 return response
 
             # Retryable error

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from vectrade._utils.encoding import encode_path_param
-from vectrade.types.earnings import EarningsResult, EarningsCalendarEntry
+from vectrade.types.earnings import EarningsCalendarEntry, EarningsResult
 
 if TYPE_CHECKING:
     import httpx

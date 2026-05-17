@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from vectrade._pagination import SyncPaginator, AsyncPaginator
+from vectrade._pagination import AsyncPaginator, SyncPaginator
 from vectrade.types.screener import ScreenerResult
 
 if TYPE_CHECKING:
@@ -36,7 +36,12 @@ class Screener:
 
         Returns an auto-paginating iterator over results.
         """
-        filters: dict[str, Any] = {"country": country, "sort_by": sort_by, "sort_order": sort_order, "limit": limit}
+        filters: dict[str, Any] = {
+            "country": country,
+            "sort_by": sort_by,
+            "sort_order": sort_order,
+            "limit": limit,
+        }
         if market_cap_min is not None:
             filters["market_cap_min"] = market_cap_min
         if market_cap_max is not None:
@@ -85,7 +90,12 @@ class AsyncScreener:
         limit: int = 50,
     ) -> AsyncPaginator[ScreenerResult]:
         """Run a stock screener with custom filters."""
-        filters: dict[str, Any] = {"country": country, "sort_by": sort_by, "sort_order": sort_order, "limit": limit}
+        filters: dict[str, Any] = {
+            "country": country,
+            "sort_by": sort_by,
+            "sort_order": sort_order,
+            "limit": limit,
+        }
         if market_cap_min is not None:
             filters["market_cap_min"] = market_cap_min
         if market_cap_max is not None:

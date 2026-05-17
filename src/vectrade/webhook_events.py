@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
 
 
 class EventCategory(str, Enum):
@@ -80,7 +79,6 @@ EVENT_CATALOG: dict[str, EventDefinition] = {
         retry_policy="No retry (time-sensitive)",
         available_tiers=("starter", "pro", "enterprise"),
     ),
-
     # Earnings & Analyst Events
     "earnings.released": EventDefinition(
         event_type="earnings.released",
@@ -109,7 +107,6 @@ EVENT_CATALOG: dict[str, EventDefinition] = {
         retry_policy="3 retries with exponential backoff",
         available_tiers=("pro", "enterprise"),
     ),
-
     # Insider Events
     "insider.transaction": EventDefinition(
         event_type="insider.transaction",
@@ -120,7 +117,6 @@ EVENT_CATALOG: dict[str, EventDefinition] = {
         retry_policy="3 retries with exponential backoff",
         available_tiers=("pro", "enterprise"),
     ),
-
     # AI Events
     "ai.analysis_complete": EventDefinition(
         event_type="ai.analysis_complete",
@@ -131,7 +127,6 @@ EVENT_CATALOG: dict[str, EventDefinition] = {
         retry_policy="5 retries with exponential backoff",
         available_tiers=("pro", "enterprise"),
     ),
-
     # Account Events
     "account.usage_threshold": EventDefinition(
         event_type="account.usage_threshold",
@@ -160,7 +155,6 @@ EVENT_CATALOG: dict[str, EventDefinition] = {
         retry_policy="3 retries",
         available_tiers=("starter", "pro", "enterprise"),
     ),
-
     # System Events
     "system.maintenance_scheduled": EventDefinition(
         event_type="system.maintenance_scheduled",

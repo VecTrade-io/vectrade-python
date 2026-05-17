@@ -10,7 +10,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from vectrade import VecTrade
 
@@ -23,9 +23,9 @@ class VecTradeToolkit:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         sandbox: bool = False,
-        include: Optional[list[str]] = None,
+        include: list[str] | None = None,
     ) -> None:
         """Initialize the toolkit.
 
@@ -134,6 +134,7 @@ class VecTradeToolkit:
     def _screen_stocks(self, criteria_json: str) -> str:
         """Screen stocks based on JSON criteria."""
         import json
+
         criteria = json.loads(criteria_json) if isinstance(criteria_json, str) else criteria_json
         results = list(self._client.screener.run(**criteria))
         if not results:
@@ -148,6 +149,7 @@ class VecTradeToolkit:
         """Create a simple tool-like object compatible with LangChain."""
         try:
             from langchain_core.tools import StructuredTool
+
             return StructuredTool.from_function(
                 func=func,
                 name=name,
@@ -157,6 +159,7 @@ class VecTradeToolkit:
             # Fallback: return a simple namespace if langchain not installed
             class SimpleTool:
                 pass
+
             tool = SimpleTool()
             tool.name = name  # type: ignore[attr-defined]
             tool.description = description  # type: ignore[attr-defined]

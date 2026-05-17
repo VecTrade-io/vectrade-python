@@ -25,7 +25,9 @@ class Webhooks:
     def __init__(self, http: httpx.Client) -> None:
         self._http = http
 
-    def create(self, *, url: str, events: list[str], description: str | None = None) -> WebhookSubscription:
+    def create(
+        self, *, url: str, events: list[str], description: str | None = None
+    ) -> WebhookSubscription:
         """Create a webhook subscription."""
         body: dict = {"url": url, "events": events}
         if description:
@@ -95,7 +97,9 @@ class AsyncWebhooks:
     def __init__(self, http: httpx.AsyncClient) -> None:
         self._http = http
 
-    async def create(self, *, url: str, events: list[str], description: str | None = None) -> WebhookSubscription:
+    async def create(
+        self, *, url: str, events: list[str], description: str | None = None
+    ) -> WebhookSubscription:
         body: dict = {"url": url, "events": events}
         if description:
             body["description"] = description

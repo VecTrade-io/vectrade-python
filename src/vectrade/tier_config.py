@@ -16,10 +16,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-
 # ---------------------------------------------------------------------------
 # Response data-classes
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class PlanInfo:
@@ -35,9 +35,9 @@ class PlanInfo:
     includes_ai: bool
     overage_policy: str
     monthly_price_usd: float
-    metering_type: str           # "prompt" | "token"
-    ai_prompts_per_day: int      # -1 = unlimited
-    monthly_tokens: int           # 0 means N/A
+    metering_type: str  # "prompt" | "token"
+    ai_prompts_per_day: int  # -1 = unlimited
+    monthly_tokens: int  # 0 means N/A
     overage_cap_multiplier: float
     description: str = ""
 
@@ -88,7 +88,7 @@ class QuotaInfo:
 
     @property
     def usage_pct(self) -> float:
-        """Percentage of monthly quota consumed (0.0–100.0+)."""
+        """Percentage of monthly quota consumed (0.0-100.0+)."""
         if self.monthly_quota <= 0:
             return 0.0
         return (self.used / self.monthly_quota) * 100.0
@@ -148,5 +148,3 @@ def get_default_tier(name: str) -> dict[str, Any]:
     Raises ``KeyError`` if *name* is not one of the seed plans.
     """
     return DEFAULT_TIERS[name.lower()]
-    """
-    return get_tier(tier).rate_limits

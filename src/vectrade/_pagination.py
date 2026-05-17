@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator, AsyncIterator, Callable, Awaitable
+from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel

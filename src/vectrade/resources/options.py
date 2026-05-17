@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from vectrade._utils.encoding import encode_path_param
-from vectrade.types.options import OptionContract, OptionsChain
+from vectrade.types.options import OptionsChain
 
 if TYPE_CHECKING:
     import httpx

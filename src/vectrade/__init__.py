@@ -17,9 +17,8 @@ from vectrade._exceptions import (
 from vectrade._version import __version__
 
 __all__ = [
-    "AsyncVecTrade",
-    "VecTrade",
     "APIError",
+    "AsyncVecTrade",
     "AuthenticationError",
     "ConfigurationError",
     "NotFoundError",
@@ -29,6 +28,7 @@ __all__ = [
     "ServerError",
     "ServiceUnavailableError",
     "ValidationError",
+    "VecTrade",
     "VecTradeError",
     "__version__",
 ]

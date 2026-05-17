@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Generator, AsyncGenerator
+from collections.abc import AsyncGenerator, Generator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
