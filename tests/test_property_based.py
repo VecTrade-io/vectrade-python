@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings, assume
+from hypothesis import given
 from hypothesis import strategies as st
 
 from vectrade._utils.encoding import encode_path_param
 from vectrade._utils.retry import (
+    DEFAULT_MAX_DELAY,
+    RETRYABLE_STATUS_CODES,
     calculate_retry_delay,
     should_retry,
-    RETRYABLE_STATUS_CODES,
-    DEFAULT_MAX_DELAY,
 )
 
-
 # ---------- encode_path_param properties ----------
+
 
 @given(st.text())
 def test_encode_path_param_never_contains_raw_slash(value: str):
@@ -47,6 +47,7 @@ def test_encode_path_param_idempotent_safety(value: str):
 
 
 # ---------- calculate_retry_delay properties ----------
+
 
 @given(
     attempt=st.integers(min_value=0, max_value=20),
@@ -86,6 +87,7 @@ def test_retry_after_header_takes_precedence(attempt: int, retry_after: float):
 
 
 # ---------- should_retry properties ----------
+
 
 @given(st.integers(min_value=200, max_value=399))
 def test_success_codes_never_retried(status_code: int):

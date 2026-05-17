@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 from typing import TYPE_CHECKING
 
 from vectrade._utils.encoding import encode_path_param
@@ -22,7 +23,7 @@ class News:
         symbol: str,
         *,
         limit: int = 20,
-    ) -> list[NewsArticle]:
+    ) -> builtins.list[NewsArticle]:
         """Get latest financial news for a symbol.
 
         Args:
@@ -35,7 +36,7 @@ class News:
         articles = data.get("articles", [])[:limit]
         return [NewsArticle.model_validate(item) for item in articles]
 
-    def get(self, symbol: str) -> list[NewsArticle]:
+    def get(self, symbol: str) -> builtins.list[NewsArticle]:
         """Get news articles for a symbol."""
         return self.list(symbol)
 
@@ -51,7 +52,7 @@ class AsyncNews:
         symbol: str,
         *,
         limit: int = 20,
-    ) -> list[NewsArticle]:
+    ) -> builtins.list[NewsArticle]:
         """Get latest financial news for a symbol."""
         response = await self._http.get(f"/vq/news/{encode_path_param(symbol)}")
         response.raise_for_status()
@@ -59,6 +60,6 @@ class AsyncNews:
         articles = data.get("articles", [])[:limit]
         return [NewsArticle.model_validate(item) for item in articles]
 
-    async def get(self, symbol: str) -> list[NewsArticle]:
+    async def get(self, symbol: str) -> builtins.list[NewsArticle]:
         """Get news articles for a symbol."""
         return await self.list(symbol)

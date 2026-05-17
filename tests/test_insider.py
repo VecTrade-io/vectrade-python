@@ -1,33 +1,31 @@
 """Tests for insider resource using respx mocking."""
 
 import httpx
-import pytest
 import respx
 
 from vectrade import VecTrade
 
-
 MOCK_TRANSACTION = {
-    "symbol": "AAPL",
-    "insider_name": "Tim Cook",
-    "title": "CEO",
+    "insider": "Tim Cook",
+    "position": "CEO",
     "transaction_type": "sell",
     "shares": 50000,
-    "price": 198.50,
-    "total_value": 9_925_000.0,
-    "shares_owned_after": 3_280_000,
-    "filed_at": "2026-05-10T16:00:00Z",
+    "value": 9_925_000.0,
+    "transaction_date": "2026-05-10",
+    "ownership": "D",
+    "description": "Sale at price 198.50 per share.",
 }
 
-MOCK_SUMMARY = {
-    "symbol": "AAPL",
-    "net_shares_30d": -150000,
-    "net_value_30d": -29_750_000.0,
-    "net_shares_90d": -320000,
-    "net_value_90d": -63_200_000.0,
-    "buy_count_90d": 2,
-    "sell_count_90d": 8,
-    "most_recent_transaction": MOCK_TRANSACTION,
+MOCK_INSIDER_RESPONSE = {
+    "ticker": "AAPL",
+    "trades": [MOCK_TRANSACTION],
+    "buy_count": 2,
+    "sell_count": 8,
+    "exercise_count": 0,
+    "buy_volume": 10000,
+    "sell_volume": 150000,
+    "net_trades": -6,
+    "count": 10,
 }
 
 
@@ -36,8 +34,8 @@ class TestInsiderTransactions:
 
     def test_get_transactions(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Fetches insider transactions."""
-        route = mock_api.get("/vq/insider/AAPL/transactions").mock(
-            return_value=httpx.Response(200, json={"data": [MOCK_TRANSACTION]})
+        route = mock_api.get("/vq/insider/AAPL").mock(
+            return_value=httpx.Response(200, json=MOCK_INSIDER_RESPONSE)
         )
         transactions = client.insider.transactions("AAPL")
         assert route.called
@@ -47,14 +45,15 @@ class TestInsiderTransactions:
         assert transactions[0].total_value == 9_925_000.0
 
     def test_transactions_with_limit(self, client: VecTrade, mock_api: respx.Router) -> None:
-        """Passes limit parameter."""
-        route = mock_api.get("/vq/insider/AAPL/transactions").mock(
-            return_value=httpx.Response(200, json={"data": []})
+        """Respects limit parameter."""
+        trades = [MOCK_TRANSACTION] * 10
+        response = {**MOCK_INSIDER_RESPONSE, "trades": trades}
+        route = mock_api.get("/vq/insider/AAPL").mock(
+            return_value=httpx.Response(200, json=response)
         )
-        client.insider.transactions("AAPL", limit=5)
+        transactions = client.insider.transactions("AAPL", limit=5)
         assert route.called
-        request = route.calls.last.request
-        assert "limit=5" in str(request.url)
+        assert len(transactions) == 5
 
 
 class TestInsiderSummary:
@@ -62,14 +61,12 @@ class TestInsiderSummary:
 
     def test_get_summary(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Fetches insider trading summary."""
-        route = mock_api.get("/vq/insider/AAPL/summary").mock(
-            return_value=httpx.Response(200, json=MOCK_SUMMARY)
+        route = mock_api.get("/vq/insider/AAPL").mock(
+            return_value=httpx.Response(200, json=MOCK_INSIDER_RESPONSE)
         )
         summary = client.insider.summary("AAPL")
         assert route.called
         assert summary.symbol == "AAPL"
-        assert summary.net_shares_30d == -150000
-        assert summary.buy_count_90d == 2
-        assert summary.sell_count_90d == 8
-        assert summary.most_recent_transaction is not None
-        assert summary.most_recent_transaction.insider_name == "Tim Cook"
+        assert summary.buy_count == 2
+        assert summary.sell_count == 8
+        assert summary.net_trades == -6

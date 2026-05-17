@@ -55,7 +55,7 @@ class Options:
         """
         response = self._http.get(f"/vq/options/{encode_path_param(symbol)}/expirations")
         response.raise_for_status()
-        return response.json()["data"]
+        return response.json()["data"]  # type: ignore[no-any-return]
 
 
 class AsyncOptions:
@@ -86,4 +86,4 @@ class AsyncOptions:
         """Get available expiration dates for a symbol."""
         response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}/expirations")
         response.raise_for_status()
-        return response.json()["data"]
+        return response.json()["data"]  # type: ignore[no-any-return]

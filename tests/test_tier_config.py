@@ -119,25 +119,29 @@ class TestQuotaInfo:
         assert not quota.is_exhausted
 
     def test_exhausted(self):
-        quota = QuotaInfo.from_api({
-            "plan_id": "free",
-            "monthly_quota": 10_000,
-            "used": 10_000,
-            "remaining": 0,
-            "overage_policy": "BLOCK",
-            "reset_at": "2026-06-01T00:00:00Z",
-        })
+        quota = QuotaInfo.from_api(
+            {
+                "plan_id": "free",
+                "monthly_quota": 10_000,
+                "used": 10_000,
+                "remaining": 0,
+                "overage_policy": "BLOCK",
+                "reset_at": "2026-06-01T00:00:00Z",
+            }
+        )
         assert quota.is_exhausted
         assert quota.usage_pct == pytest.approx(100.0)
 
     def test_usage_pct_over_quota(self):
-        quota = QuotaInfo.from_api({
-            "plan_id": "standard",
-            "monthly_quota": 100_000,
-            "used": 150_000,
-            "remaining": -50_000,
-            "overage_policy": "PAYG",
-            "reset_at": "",
-        })
+        quota = QuotaInfo.from_api(
+            {
+                "plan_id": "standard",
+                "monthly_quota": 100_000,
+                "used": 150_000,
+                "remaining": -50_000,
+                "overage_policy": "PAYG",
+                "reset_at": "",
+            }
+        )
         assert quota.usage_pct == pytest.approx(150.0)
         assert quota.is_exhausted

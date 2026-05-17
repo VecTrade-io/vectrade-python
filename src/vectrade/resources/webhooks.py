@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from vectrade._exceptions import VecTradeError
 from vectrade._utils.encoding import encode_path_param
@@ -29,7 +29,7 @@ class Webhooks:
         self, *, url: str, events: list[str], description: str | None = None
     ) -> WebhookSubscription:
         """Create a webhook subscription."""
-        body: dict = {"url": url, "events": events}
+        body: dict[str, Any] = {"url": url, "events": events}
         if description:
             body["description"] = description
         response = self._http.post("/vq/webhooks", json=body)
@@ -100,7 +100,7 @@ class AsyncWebhooks:
     async def create(
         self, *, url: str, events: list[str], description: str | None = None
     ) -> WebhookSubscription:
-        body: dict = {"url": url, "events": events}
+        body: dict[str, Any] = {"url": url, "events": events}
         if description:
             body["description"] = description
         response = await self._http.post("/vq/webhooks", json=body)

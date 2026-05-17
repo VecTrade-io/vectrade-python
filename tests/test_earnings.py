@@ -1,23 +1,16 @@
 """Tests for earnings resource using respx mocking."""
 
 import httpx
-import pytest
 import respx
 
 from vectrade import VecTrade
 
-
 MOCK_EARNINGS_RESULT = {
-    "symbol": "AAPL",
     "date": "2026-04-24",
-    "fiscal_quarter": "Q2 2026",
     "eps_actual": 1.58,
     "eps_estimate": 1.52,
-    "eps_surprise": 0.06,
-    "eps_surprise_pct": 3.95,
     "revenue_actual": 95_400_000_000,
     "revenue_estimate": 94_200_000_000,
-    "revenue_surprise_pct": 1.27,
 }
 
 MOCK_CALENDAR_ENTRY = {
@@ -36,24 +29,26 @@ class TestEarningsHistory:
 
     def test_get_history(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Fetches earnings history."""
-        route = mock_api.get("/vq/earnings/AAPL/history").mock(
-            return_value=httpx.Response(200, json={"data": [MOCK_EARNINGS_RESULT]})
+        route = mock_api.get("/vq/earnings/AAPL").mock(
+            return_value=httpx.Response(
+                200, json={"ticker": "AAPL", "history": [MOCK_EARNINGS_RESULT]}
+            )
         )
         history = client.earnings.history("AAPL")
         assert route.called
         assert len(history) == 1
         assert history[0].eps_actual == 1.58
-        assert history[0].fiscal_quarter == "Q2 2026"
+        assert history[0].date == "2026-04-24"
 
     def test_history_with_limit(self, client: VecTrade, mock_api: respx.Router) -> None:
-        """Passes limit parameter."""
-        route = mock_api.get("/vq/earnings/AAPL/history").mock(
-            return_value=httpx.Response(200, json={"data": []})
+        """Respects limit parameter."""
+        results = [MOCK_EARNINGS_RESULT] * 10
+        route = mock_api.get("/vq/earnings/AAPL").mock(
+            return_value=httpx.Response(200, json={"ticker": "AAPL", "history": results})
         )
-        client.earnings.history("AAPL", limit=4)
+        history = client.earnings.history("AAPL", limit=4)
         assert route.called
-        request = route.calls.last.request
-        assert "limit=4" in str(request.url)
+        assert len(history) == 4
 
 
 class TestEarningsCalendar:

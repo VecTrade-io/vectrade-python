@@ -1,7 +1,5 @@
 """Tests for exception hierarchy."""
 
-import pytest
-
 from vectrade import (
     APIError,
     AuthenticationError,

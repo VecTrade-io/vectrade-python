@@ -1,12 +1,10 @@
 """Tests for quotes resource using respx mocking."""
 
 import httpx
-import pytest
 import respx
 
 from vectrade import VecTrade
 from vectrade.types.quote import QuoteResponse
-
 
 MOCK_QUOTE = {
     "symbol": "AAPL",
@@ -55,11 +53,11 @@ class TestQuotesGet:
         request = route.calls[0].request
         assert "fields" in str(request.url)
 
-    def test_get_quote_returns_response_type(self, client: VecTrade, mock_api: respx.Router) -> None:
+    def test_get_quote_returns_response_type(
+        self, client: VecTrade, mock_api: respx.Router
+    ) -> None:
         """Returns proper QuoteResponse type."""
-        mock_api.get("/vq/quotes/AAPL").mock(
-            return_value=httpx.Response(200, json=MOCK_QUOTE)
-        )
+        mock_api.get("/vq/quotes/AAPL").mock(return_value=httpx.Response(200, json=MOCK_QUOTE))
         quote = client.quotes.get("AAPL")
         assert isinstance(quote, QuoteResponse)
 
@@ -69,9 +67,7 @@ class TestQuotesBatch:
 
     def test_batch_quotes(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Successfully fetches multiple quotes."""
-        mock_api.get("/vq/quotes/batch").mock(
-            return_value=httpx.Response(200, json=MOCK_BATCH)
-        )
+        mock_api.get("/vq/quotes/batch").mock(return_value=httpx.Response(200, json=MOCK_BATCH))
         quotes = client.quotes.batch(["AAPL", "GOOGL", "MSFT"])
         assert len(quotes) == 3
         assert quotes[0].symbol == "AAPL"
@@ -98,18 +94,28 @@ class TestQuotesPathEncoding:
         )
         client.quotes.get("../admin")
         request = route.calls[0].request
-        url_path = str(request.url.raw_path, "utf-8") if isinstance(request.url.raw_path, bytes) else str(request.url)
+        url_path = (
+            str(request.url.raw_path, "utf-8")
+            if isinstance(request.url.raw_path, bytes)
+            else str(request.url)
+        )
         # The forward slash must be encoded (%2F) preventing path traversal
         assert "/../" not in url_path
         assert "%2F" in url_path or "%2f" in url_path
 
-    def test_symbol_with_special_chars_is_encoded(self, client: VecTrade, mock_api: respx.Router) -> None:
+    def test_symbol_with_special_chars_is_encoded(
+        self, client: VecTrade, mock_api: respx.Router
+    ) -> None:
         """Symbols with special chars are safely encoded."""
         route = mock_api.get(url__regex=r"/vq/quotes/.*").mock(
             return_value=httpx.Response(200, json=MOCK_QUOTE)
         )
         client.quotes.get("AAPL%00../../secret")
         request = route.calls[0].request
-        url_path = str(request.url.raw_path, "utf-8") if isinstance(request.url.raw_path, bytes) else str(request.url)
+        url_path = (
+            str(request.url.raw_path, "utf-8")
+            if isinstance(request.url.raw_path, bytes)
+            else str(request.url)
+        )
         # Null byte and traversal must be encoded
         assert "%00" not in url_path or "%2500" in url_path

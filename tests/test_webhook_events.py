@@ -1,7 +1,5 @@
 """Tests for webhook event catalog."""
 
-import pytest
-
 from vectrade.webhook_events import (
     EVENT_CATALOG,
     DeliveryGuarantee,
@@ -60,13 +58,13 @@ class TestGetEventsForTier:
         assert len(enterprise_events) == len(EVENT_CATALOG)
 
     def test_starter_subset_of_pro(self):
-        starter = set(e.event_type for e in get_events_for_tier("starter"))
-        pro = set(e.event_type for e in get_events_for_tier("pro"))
+        starter = {e.event_type for e in get_events_for_tier("starter")}
+        pro = {e.event_type for e in get_events_for_tier("pro")}
         assert starter.issubset(pro)
 
     def test_pro_subset_of_enterprise(self):
-        pro = set(e.event_type for e in get_events_for_tier("pro"))
-        enterprise = set(e.event_type for e in get_events_for_tier("enterprise"))
+        pro = {e.event_type for e in get_events_for_tier("pro")}
+        enterprise = {e.event_type for e in get_events_for_tier("enterprise")}
         assert pro.issubset(enterprise)
 
     def test_free_tier_gets_no_events(self):

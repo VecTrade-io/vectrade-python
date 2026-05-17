@@ -2,7 +2,6 @@
 
 from vectrade._middleware import (
     IdempotencyMiddleware,
-    LoggingMiddleware,
     MiddlewareStack,
     RequestContext,
     ResponseContext,
@@ -20,6 +19,7 @@ def _make_request() -> RequestContext:
 
 def _make_handler(status: int = 200) -> object:
     """Create a terminal handler that returns a fixed response."""
+
     def handler(request: RequestContext) -> ResponseContext:
         return ResponseContext(
             status_code=status,
@@ -28,6 +28,7 @@ def _make_handler(status: int = 200) -> object:
             elapsed_ms=42.0,
             request=request,
         )
+
     return handler
 
 
@@ -65,6 +66,7 @@ class TestMiddlewareStack:
             def middleware(request, call_next):
                 order.append(n)
                 return call_next(request)
+
             return middleware
 
         stack = MiddlewareStack()
@@ -77,6 +79,7 @@ class TestMiddlewareStack:
 
     def test_middleware_can_modify_request(self) -> None:
         """Middleware can add headers before passing along."""
+
         def add_header(request, call_next):
             request.headers["X-Custom"] = "test-value"
             return call_next(request)
@@ -86,8 +89,11 @@ class TestMiddlewareStack:
         def handler(request):
             captured_headers.update(request.headers)
             return ResponseContext(
-                status_code=200, headers={}, body=b"",
-                elapsed_ms=0, request=request,
+                status_code=200,
+                headers={},
+                body=b"",
+                elapsed_ms=0,
+                request=request,
             )
 
         stack = MiddlewareStack()
@@ -123,8 +129,11 @@ class TestIdempotencyMiddleware:
         def handler(request):
             captured.update(request.headers)
             return ResponseContext(
-                status_code=201, headers={}, body=b"",
-                elapsed_ms=0, request=request,
+                status_code=201,
+                headers={},
+                body=b"",
+                elapsed_ms=0,
+                request=request,
             )
 
         stack = MiddlewareStack()
@@ -142,8 +151,11 @@ class TestIdempotencyMiddleware:
         def handler(request):
             captured.update(request.headers)
             return ResponseContext(
-                status_code=200, headers={}, body=b"",
-                elapsed_ms=0, request=request,
+                status_code=200,
+                headers={},
+                body=b"",
+                elapsed_ms=0,
+                request=request,
             )
 
         stack = MiddlewareStack()
@@ -164,8 +176,11 @@ class TestIdempotencyMiddleware:
         def handler(request):
             captured.update(request.headers)
             return ResponseContext(
-                status_code=201, headers={}, body=b"",
-                elapsed_ms=0, request=request,
+                status_code=201,
+                headers={},
+                body=b"",
+                elapsed_ms=0,
+                request=request,
             )
 
         stack = MiddlewareStack()

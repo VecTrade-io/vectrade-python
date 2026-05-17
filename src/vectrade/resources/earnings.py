@@ -27,9 +27,7 @@ class Earnings:
         Returns:
             List of EarningsResult (most recent first).
         """
-        response = self._http.get(
-            f"/vq/earnings/{encode_path_param(symbol)}"
-        )
+        response = self._http.get(f"/vq/earnings/{encode_path_param(symbol)}")
         response.raise_for_status()
         data = response.json()
         history = data.get("history", [])[:limit]
@@ -66,9 +64,7 @@ class AsyncEarnings:
 
     async def history(self, symbol: str, *, limit: int = 8) -> list[EarningsResult]:
         """Get historical earnings results for a symbol."""
-        response = await self._http.get(
-            f"/vq/earnings/{encode_path_param(symbol)}"
-        )
+        response = await self._http.get(f"/vq/earnings/{encode_path_param(symbol)}")
         response.raise_for_status()
         data = response.json()
         history = data.get("history", [])[:limit]

@@ -31,7 +31,7 @@ class Developer:
         """
         response = self._http.get("/vq/developer/keys")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     def create_key(self, *, label: str, scopes: list[str] | None = None) -> dict[str, Any]:
         """Create a new API key.
@@ -52,7 +52,7 @@ class Developer:
             body["scopes"] = scopes
         response = self._http.post("/vq/developer/keys", json=body)
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     def revoke_key(self, key_id: str) -> None:
         """Permanently revoke an API key.
@@ -74,7 +74,7 @@ class Developer:
         """
         response = self._http.get("/vq/developer/usage")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     def get_daily_usage(self, *, days: int = 30) -> list[dict[str, Any]]:
         """Get per-day, per-endpoint usage breakdown.
@@ -87,7 +87,7 @@ class Developer:
         """
         response = self._http.get("/vq/developer/usage/daily", params={"days": str(min(days, 90))})
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     def get_plan(self) -> dict[str, Any]:
         """Get the user's active subscription details.
@@ -98,7 +98,7 @@ class Developer:
         """
         response = self._http.get("/vq/developer/plan")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     def get_quota(self) -> dict[str, Any]:
         """Check remaining API and token quota for the current billing period.
@@ -109,7 +109,7 @@ class Developer:
         """
         response = self._http.get("/vq/developer/quota")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
 
 class AsyncDeveloper:
@@ -121,7 +121,7 @@ class AsyncDeveloper:
     async def list_keys(self) -> list[dict[str, Any]]:
         response = await self._http.get("/vq/developer/keys")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     async def create_key(self, *, label: str, scopes: list[str] | None = None) -> dict[str, Any]:
         body: dict[str, Any] = {"label": label}
@@ -129,7 +129,7 @@ class AsyncDeveloper:
             body["scopes"] = scopes
         response = await self._http.post("/vq/developer/keys", json=body)
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     async def revoke_key(self, key_id: str) -> None:
         response = await self._http.delete(f"/vq/developer/keys/{key_id}")
@@ -138,21 +138,21 @@ class AsyncDeveloper:
     async def get_usage(self) -> dict[str, Any]:
         response = await self._http.get("/vq/developer/usage")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     async def get_daily_usage(self, *, days: int = 30) -> list[dict[str, Any]]:
         response = await self._http.get(
             "/vq/developer/usage/daily", params={"days": str(min(days, 90))}
         )
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     async def get_plan(self) -> dict[str, Any]:
         response = await self._http.get("/vq/developer/plan")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     async def get_quota(self) -> dict[str, Any]:
         response = await self._http.get("/vq/developer/quota")
         response.raise_for_status()
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]

@@ -3,10 +3,9 @@
 import pytest
 
 from vectrade import (
-    VecTrade,
     AsyncVecTrade,
     ConfigurationError,
-    VecTradeError,
+    VecTrade,
 )
 from vectrade._utils.config import DEFAULT_BASE_URL, SANDBOX_BASE_URL
 
@@ -62,7 +61,9 @@ class TestClientInit:
         assert client.base_url == "https://custom.api.com/v1"
         client.close()
 
-    def test_base_url_strips_trailing_slash(self, monkeypatch: pytest.MonkeyPatch, api_key: str) -> None:
+    def test_base_url_strips_trailing_slash(
+        self, monkeypatch: pytest.MonkeyPatch, api_key: str
+    ) -> None:
         """Trailing slashes are stripped from base URL."""
         monkeypatch.setenv("VECTRADE_API_KEY", api_key)
         client = VecTrade(base_url="https://custom.api.com/v1/")
@@ -116,7 +117,9 @@ class TestClientContextManager:
             assert client.api_key == api_key
 
     @pytest.mark.anyio
-    async def test_async_context_manager(self, monkeypatch: pytest.MonkeyPatch, api_key: str) -> None:
+    async def test_async_context_manager(
+        self, monkeypatch: pytest.MonkeyPatch, api_key: str
+    ) -> None:
         """Client works as an async context manager."""
         monkeypatch.setenv("VECTRADE_API_KEY", api_key)
         async with AsyncVecTrade() as client:
@@ -139,7 +142,9 @@ class TestClientResources:
         assert hasattr(client, "webhooks")
         client.close()
 
-    def test_async_all_resources_available(self, monkeypatch: pytest.MonkeyPatch, api_key: str) -> None:
+    def test_async_all_resources_available(
+        self, monkeypatch: pytest.MonkeyPatch, api_key: str
+    ) -> None:
         """All API resource namespaces are available on the async client."""
         monkeypatch.setenv("VECTRADE_API_KEY", api_key)
         client = AsyncVecTrade()
@@ -156,7 +161,9 @@ class TestAsyncClientRequest:
     """Test async client request method with retry logic."""
 
     @pytest.mark.anyio
-    async def test_async_request_has_method(self, monkeypatch: pytest.MonkeyPatch, api_key: str) -> None:
+    async def test_async_request_has_method(
+        self, monkeypatch: pytest.MonkeyPatch, api_key: str
+    ) -> None:
         """AsyncVecTrade exposes a request method."""
         monkeypatch.setenv("VECTRADE_API_KEY", api_key)
         async with AsyncVecTrade() as client:
@@ -164,7 +171,9 @@ class TestAsyncClientRequest:
             assert callable(client.request)
 
     @pytest.mark.anyio
-    async def test_async_request_idempotency_key(self, monkeypatch: pytest.MonkeyPatch, api_key: str) -> None:
+    async def test_async_request_idempotency_key(
+        self, monkeypatch: pytest.MonkeyPatch, api_key: str
+    ) -> None:
         """AsyncVecTrade.request() supports idempotency_key parameter."""
         import inspect
 

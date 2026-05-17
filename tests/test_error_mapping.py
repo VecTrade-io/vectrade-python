@@ -45,7 +45,9 @@ class TestErrorStatusMapping:
 
     @respx.mock
     def test_403_raises_authentication_error(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/quotes/AAPL").respond(403, json={"error": {"message": "Forbidden"}})
+        respx.get(f"{BASE_URL}/vq/quotes/AAPL").respond(
+            403, json={"error": {"message": "Forbidden"}}
+        )
         with pytest.raises(AuthenticationError):
             client.request("GET", "/vq/quotes/AAPL")
 
@@ -127,7 +129,13 @@ class TestErrorStatusMapping:
     def test_error_preserves_error_type_and_docs_url(self, client: VecTrade) -> None:
         respx.get(f"{BASE_URL}/vq/quotes/AAPL").respond(
             404,
-            json={"error": {"message": "Not found", "type": "not_found", "docs_url": "https://docs.vectrade.io/errors#not-found"}},
+            json={
+                "error": {
+                    "message": "Not found",
+                    "type": "not_found",
+                    "docs_url": "https://docs.vectrade.io/errors#not-found",
+                }
+            },
         )
         with pytest.raises(NotFoundError) as exc_info:
             client.request("GET", "/vq/quotes/AAPL")
@@ -381,6 +389,7 @@ class TestFinanceCoreErrorFormat:
             client.request("GET", "/vq/quotes/AAPL")
         assert exc_info.value.retry_after == 5.0
 
+
 class TestIdempotencyKey:
     """Test that idempotency key is sent as a header."""
 
@@ -417,7 +426,9 @@ class TestSuccessfulRequest:
 
     @respx.mock
     def test_200_returns_response(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/quotes/AAPL").respond(200, json={"symbol": "AAPL", "price": 195.0})
+        respx.get(f"{BASE_URL}/vq/quotes/AAPL").respond(
+            200, json={"symbol": "AAPL", "price": 195.0}
+        )
         response = client.request("GET", "/vq/quotes/AAPL")
         assert response.status_code == 200
         assert response.json()["symbol"] == "AAPL"
@@ -427,5 +438,6 @@ class TestSuccessfulRequest:
         route = respx.post(f"{BASE_URL}/vq/screener").respond(200, json={"data": []})
         client.request("POST", "/vq/screener", json={"marketCapMin": 1e9})
         import json
+
         sent = json.loads(route.calls[0].request.content)
         assert sent == {"marketCapMin": 1000000000.0}

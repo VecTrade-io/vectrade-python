@@ -1,11 +1,9 @@
 """Tests for options resource using respx mocking."""
 
 import httpx
-import pytest
 import respx
 
 from vectrade import VecTrade
-
 
 MOCK_OPTION_CONTRACT = {
     "contract_symbol": "AAPL260620C00200000",
@@ -51,7 +49,7 @@ class TestOptionsChain:
         route = mock_api.get("/vq/options/AAPL").mock(
             return_value=httpx.Response(200, json=MOCK_OPTIONS_CHAIN)
         )
-        chain = client.options.chain("AAPL", expiration="2026-06-20", option_type="call")
+        client.options.chain("AAPL", expiration="2026-06-20", option_type="call")
         assert route.called
         request = route.calls.last.request
         assert "expiration=2026-06-20" in str(request.url)

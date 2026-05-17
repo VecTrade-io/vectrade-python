@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncGenerator, Generator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     import httpx
@@ -17,14 +17,14 @@ class StreamChunk:
 
     text: str
     type: str = "text"
-    metadata: dict | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
 class StreamDone:
     """Sentinel indicating the stream is complete."""
 
-    usage: dict | None = None
+    usage: dict[str, Any] | None = None
 
 
 def iter_sse_lines(response: httpx.Response) -> Generator[str, None, None]:

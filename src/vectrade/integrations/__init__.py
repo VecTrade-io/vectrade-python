@@ -96,29 +96,26 @@ class VecTradeToolkit:
         data = self._client.fundamentals.get(symbol.strip().upper())
         return (
             f"{data.company_name} ({data.symbol})\n"
-            f"Sector: {data.sector} | Industry: {data.industry}\n"
+            f"Market: {data.market}\n"
             f"Market Cap: ${data.market_cap:,.0f}\n"
-            f"P/E Ratio: {data.pe_ratio}\n"
-            f"EPS: ${data.eps:.2f}\n"
-            f"Dividend Yield: {data.dividend_yield or 0:.2%}"
+            f"52-Week Range: {data.fifty_two_week_low} - {data.fifty_two_week_high}\n"
+            f"SMA50: {data.sma50} | SMA200: {data.sma200}"
         )
 
     def _get_technicals(self, symbol: str) -> str:
         """Fetch and format technical indicators."""
-        data = self._client.technicals.get(
-            symbol.strip().upper(),
-            indicators=["rsi", "macd", "sma"],
-        )
+        data = self._client.technicals.get(symbol.strip().upper())
         lines = [f"Technical Indicators for {data.symbol}:"]
-        for name, values in data.indicators.items():
-            if values:
-                latest = values[-1]
-                lines.append(f"  {name}: {latest.value:.2f}")
+        lines.append(f"  Score: {data.technical_score}")
+        lines.append(f"  RSI(14): {data.rsi_14}")
+        if data.summary:
+            for key, val in data.summary.items():
+                lines.append(f"  {key}: {val}")
         return "\n".join(lines)
 
     def _get_news(self, symbol: str) -> str:
         """Fetch and format recent news."""
-        articles = self._client.news.list(symbols=symbol.strip().upper(), limit=5)
+        articles = self._client.news.list(symbol.strip().upper(), limit=5)
         lines = [f"Recent news for {symbol.upper()}:"]
         for article in articles:
             lines.append(f"  • [{article.source}] {article.title}")

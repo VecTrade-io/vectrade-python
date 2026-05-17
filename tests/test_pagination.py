@@ -1,6 +1,6 @@
 """Tests for pagination utilities."""
 
-from vectrade._pagination import SyncPaginator, SyncPage, PageInfo
+from vectrade._pagination import SyncPage, SyncPaginator
 from vectrade.types.screener import ScreenerResult
 
 
@@ -9,11 +9,17 @@ class TestSyncPaginator:
 
     def test_single_page(self) -> None:
         """Single page with no next returns all items."""
+
         def fetch_page(cursor=None):
             return {
                 "data": [
                     {"symbol": "AAPL", "company_name": "Apple", "price": 198.0, "change_pct": 1.0},
-                    {"symbol": "MSFT", "company_name": "Microsoft", "price": 445.0, "change_pct": 0.5},
+                    {
+                        "symbol": "MSFT",
+                        "company_name": "Microsoft",
+                        "price": 445.0,
+                        "change_pct": 0.5,
+                    },
                 ],
                 "page_info": {"has_next": False, "cursor": None},
             }
@@ -33,17 +39,38 @@ class TestSyncPaginator:
             call_count += 1
             if cursor is None:
                 return {
-                    "data": [{"symbol": "AAPL", "company_name": "Apple", "price": 198.0, "change_pct": 1.0}],
+                    "data": [
+                        {
+                            "symbol": "AAPL",
+                            "company_name": "Apple",
+                            "price": 198.0,
+                            "change_pct": 1.0,
+                        }
+                    ],
                     "page_info": {"has_next": True, "cursor": "page2"},
                 }
             elif cursor == "page2":
                 return {
-                    "data": [{"symbol": "MSFT", "company_name": "Microsoft", "price": 445.0, "change_pct": 0.5}],
+                    "data": [
+                        {
+                            "symbol": "MSFT",
+                            "company_name": "Microsoft",
+                            "price": 445.0,
+                            "change_pct": 0.5,
+                        }
+                    ],
                     "page_info": {"has_next": True, "cursor": "page3"},
                 }
             else:
                 return {
-                    "data": [{"symbol": "GOOGL", "company_name": "Alphabet", "price": 178.0, "change_pct": -0.2}],
+                    "data": [
+                        {
+                            "symbol": "GOOGL",
+                            "company_name": "Alphabet",
+                            "price": 178.0,
+                            "change_pct": -0.2,
+                        }
+                    ],
                     "page_info": {"has_next": False},
                 }
 
@@ -55,6 +82,7 @@ class TestSyncPaginator:
 
     def test_empty_page(self) -> None:
         """Empty first page returns nothing."""
+
         def fetch_page(cursor=None):
             return {"data": [], "page_info": {"has_next": False}}
 
@@ -64,9 +92,12 @@ class TestSyncPaginator:
 
     def test_pages_iterator(self) -> None:
         """Pages iterator yields SyncPage objects."""
+
         def fetch_page(cursor=None):
             return {
-                "data": [{"symbol": "AAPL", "company_name": "Apple", "price": 198.0, "change_pct": 1.0}],
+                "data": [
+                    {"symbol": "AAPL", "company_name": "Apple", "price": 198.0, "change_pct": 1.0}
+                ],
                 "page_info": {"has_next": False},
             }
 

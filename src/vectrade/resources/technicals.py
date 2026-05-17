@@ -60,8 +60,6 @@ class AsyncTechnicals:
         if indicators:
             params["indicators"] = ",".join(indicators)
 
-        response = await self._http.get(
-            f"/vq/technical/{encode_path_param(symbol)}", params=params
-        )
+        response = await self._http.get(f"/vq/technical/{encode_path_param(symbol)}", params=params)
         response.raise_for_status()
         return TechnicalResponse.model_validate(response.json())

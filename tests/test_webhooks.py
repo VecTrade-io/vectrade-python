@@ -13,8 +13,7 @@ from vectrade import VecTrade
 from vectrade._exceptions import VecTradeError
 from vectrade.resources.webhooks import Webhooks
 
-
-WEBHOOK_SECRET = "whsec_test_secret_key_12345"
+WEBHOOK_SECRET = "whsec_test_secret_key_12345"  # noqa: S105
 
 SAMPLE_EVENT = {
     "id": "evt_abc123",
@@ -166,9 +165,7 @@ class TestWebhookCRUD:
 
     def test_delete_webhook(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Deletes a webhook subscription."""
-        route = mock_api.delete("/vq/webhooks/wh_123").mock(
-            return_value=httpx.Response(204)
-        )
+        route = mock_api.delete("/vq/webhooks/wh_123").mock(return_value=httpx.Response(204))
 
         client.webhooks.delete("wh_123")
         assert route.called

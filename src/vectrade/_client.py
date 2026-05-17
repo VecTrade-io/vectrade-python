@@ -125,7 +125,7 @@ class _BaseClient:
         error_code: str | None = None
         error_type: str | None = None
         docs_url: str | None = None
-        details: dict | None = None
+        details: dict[str, Any] | None = None
         body_retry_after: float | None = None
 
         try:
@@ -375,7 +375,7 @@ class VecTrade(_BaseClient):
         """Close the HTTP client connection pool."""
         self._http.close()
 
-    def health(self, *, timeout: float = 5.0) -> dict:
+    def health(self, *, timeout: float = 5.0) -> dict[str, Any]:
         """Check API health status.
 
         Returns:
@@ -556,7 +556,7 @@ class AsyncVecTrade(_BaseClient):
         """Close the HTTP client connection pool."""
         await self._http.aclose()
 
-    async def health(self, *, timeout: float = 5.0) -> dict:
+    async def health(self, *, timeout: float = 5.0) -> dict[str, Any]:
         """Check API health status.
 
         Returns:

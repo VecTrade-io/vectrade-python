@@ -1,11 +1,9 @@
 """Tests for analyst resource using respx mocking."""
 
 import httpx
-import pytest
 import respx
 
 from vectrade import VecTrade
-
 
 MOCK_CONSENSUS = {
     "symbol": "AAPL",

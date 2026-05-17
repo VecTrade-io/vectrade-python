@@ -1,7 +1,5 @@
 """Tests for streaming SSE parsing."""
 
-import pytest
-
 from vectrade._streaming import StreamChunk, StreamDone, parse_sse_data
 
 

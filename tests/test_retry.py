@@ -3,7 +3,6 @@
 import pytest
 
 from vectrade._utils.retry import (
-    RETRYABLE_STATUS_CODES,
     calculate_retry_delay,
     should_retry,
 )
@@ -34,10 +33,7 @@ class TestCalculateRetryDelay:
 
     def test_exponential_growth(self) -> None:
         """Delay grows exponentially with attempts."""
-        delays = [
-            calculate_retry_delay(i, initial_delay=1.0, backoff_factor=2.0)
-            for i in range(5)
-        ]
+        delays = [calculate_retry_delay(i, initial_delay=1.0, backoff_factor=2.0) for i in range(5)]
         # Each delay should generally be larger than the previous (ignoring jitter)
         # Test the median tendency
         assert delays[2] > delays[0]  # 4x vs 1x base
