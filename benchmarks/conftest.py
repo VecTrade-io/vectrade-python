@@ -23,12 +23,12 @@ def benchmark_config():
 
 # Latency budgets (in milliseconds)
 LATENCY_BUDGETS = {
-    "client_init": 5.0,          # Client construction
-    "request_overhead": 1.0,      # SDK overhead per request (excluding network)
-    "json_parse_small": 0.5,      # Parse a small JSON response (<1KB)
-    "json_parse_large": 5.0,      # Parse a large JSON response (>100KB)
-    "retry_delay_calc": 0.01,     # Retry delay calculation
-    "middleware_stack": 0.5,      # Full middleware stack overhead
-    "pagination_iter": 1.0,       # Per-page iteration overhead
-    "sse_parse_chunk": 0.1,       # Parse a single SSE chunk
+    "client_init": 5.0,  # Client construction
+    "request_overhead": 1.0,  # SDK overhead per request (excluding network)
+    "json_parse_small": 0.5,  # Parse a small JSON response (<1KB)
+    "json_parse_large": 5.0,  # Parse a large JSON response (>100KB)
+    "retry_delay_calc": 0.01,  # Retry delay calculation
+    "middleware_stack": 0.5,  # Full middleware stack overhead
+    "pagination_iter": 1.0,  # Per-page iteration overhead
+    "sse_parse_chunk": 0.1,  # Parse a single SSE chunk
 }

@@ -8,13 +8,13 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.technical import TechnicalResponse
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Technicals:
     """Synchronous technicals resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def get(
@@ -38,14 +38,13 @@ class Technicals:
             params["indicators"] = ",".join(indicators)
 
         response = self._http.get(f"/vq/technical/{encode_path_param(symbol)}", params=params)
-        response.raise_for_status()
         return TechnicalResponse.model_validate(response.json())
 
 
 class AsyncTechnicals:
     """Asynchronous technicals resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def get(
@@ -61,5 +60,4 @@ class AsyncTechnicals:
             params["indicators"] = ",".join(indicators)
 
         response = await self._http.get(f"/vq/technical/{encode_path_param(symbol)}", params=params)
-        response.raise_for_status()
         return TechnicalResponse.model_validate(response.json())

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from vectrade._utils.encoding import encode_path_param
+
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Developer:
@@ -19,7 +21,7 @@ class Developer:
     a session token or API key with developer scope.
     """
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def list_keys(self) -> list[dict[str, Any]]:
@@ -30,7 +32,6 @@ class Developer:
             The raw key value is never returned.
         """
         response = self._http.get("/vq/developer/keys")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     def create_key(self, *, label: str, scopes: list[str] | None = None) -> dict[str, Any]:
@@ -51,7 +52,6 @@ class Developer:
         if scopes is not None:
             body["scopes"] = scopes
         response = self._http.post("/vq/developer/keys", json=body)
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     def revoke_key(self, key_id: str) -> None:
@@ -62,8 +62,7 @@ class Developer:
         Args:
             key_id: UUID of the key to revoke.
         """
-        response = self._http.delete(f"/vq/developer/keys/{key_id}")
-        response.raise_for_status()
+        response = self._http.delete(f"/vq/developer/keys/{encode_path_param(key_id)}")  # noqa: F841
 
     def get_usage(self) -> dict[str, Any]:
         """Get aggregated API usage for the current billing period.
@@ -73,7 +72,6 @@ class Developer:
             ``error_count``, ``tokens_used``, ``quota_limit``, ``quota_remaining``.
         """
         response = self._http.get("/vq/developer/usage")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     def get_daily_usage(self, *, days: int = 30) -> list[dict[str, Any]]:
@@ -86,7 +84,6 @@ class Developer:
             List of daily usage records.
         """
         response = self._http.get("/vq/developer/usage/daily", params={"days": str(min(days, 90))})
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     def get_plan(self) -> dict[str, Any]:
@@ -97,7 +94,6 @@ class Developer:
             ``current_period_start``, ``current_period_end``.
         """
         response = self._http.get("/vq/developer/plan")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     def get_quota(self) -> dict[str, Any]:
@@ -108,19 +104,17 @@ class Developer:
             ``overage_policy``, ``reset_at``.
         """
         response = self._http.get("/vq/developer/quota")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
 
 class AsyncDeveloper:
     """Asynchronous developer self-service endpoints."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def list_keys(self) -> list[dict[str, Any]]:
         response = await self._http.get("/vq/developer/keys")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     async def create_key(self, *, label: str, scopes: list[str] | None = None) -> dict[str, Any]:
@@ -128,31 +122,25 @@ class AsyncDeveloper:
         if scopes is not None:
             body["scopes"] = scopes
         response = await self._http.post("/vq/developer/keys", json=body)
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     async def revoke_key(self, key_id: str) -> None:
-        response = await self._http.delete(f"/vq/developer/keys/{key_id}")
-        response.raise_for_status()
+        response = await self._http.delete(f"/vq/developer/keys/{encode_path_param(key_id)}")  # noqa: F841
 
     async def get_usage(self) -> dict[str, Any]:
         response = await self._http.get("/vq/developer/usage")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     async def get_daily_usage(self, *, days: int = 30) -> list[dict[str, Any]]:
         response = await self._http.get(
             "/vq/developer/usage/daily", params={"days": str(min(days, 90))}
         )
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     async def get_plan(self) -> dict[str, Any]:
         response = await self._http.get("/vq/developer/plan")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]
 
     async def get_quota(self) -> dict[str, Any]:
         response = await self._http.get("/vq/developer/quota")
-        response.raise_for_status()
         return response.json()  # type: ignore[no-any-return]

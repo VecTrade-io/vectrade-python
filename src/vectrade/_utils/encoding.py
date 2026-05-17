@@ -17,4 +17,9 @@ def encode_path_param(value: str) -> str:
     Returns:
         URL-encoded string safe for path interpolation.
     """
-    return quote(value, safe="")
+    encoded = quote(value, safe="")
+    # Percent-encode standalone dot sequences that could enable path traversal.
+    # After quote(), slashes are already encoded, so ".." can only appear as
+    # a literal dot-dot from the original input.
+    encoded = encoded.replace("..", "%2E%2E")
+    return encoded

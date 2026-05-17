@@ -9,6 +9,7 @@ git clone https://github.com/VecTrade-io/vectrade-python.git
 cd vectrade-python
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
+pre-commit install
 ```
 
 ## Running Tests

@@ -8,13 +8,13 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.earnings import EarningsCalendarEntry, EarningsResult
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Earnings:
     """Synchronous earnings resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def history(self, symbol: str, *, limit: int = 8) -> list[EarningsResult]:
@@ -28,7 +28,6 @@ class Earnings:
             List of EarningsResult (most recent first).
         """
         response = self._http.get(f"/vq/earnings/{encode_path_param(symbol)}")
-        response.raise_for_status()
         data = response.json()
         history = data.get("history", [])[:limit]
         return [EarningsResult.model_validate(e) for e in history]
@@ -52,20 +51,18 @@ class Earnings:
             params["to"] = to_date
 
         response = self._http.get("/vq/earnings/calendar", params=params)
-        response.raise_for_status()
         return [EarningsCalendarEntry.model_validate(e) for e in response.json()["data"]]
 
 
 class AsyncEarnings:
     """Asynchronous earnings resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def history(self, symbol: str, *, limit: int = 8) -> list[EarningsResult]:
         """Get historical earnings results for a symbol."""
         response = await self._http.get(f"/vq/earnings/{encode_path_param(symbol)}")
-        response.raise_for_status()
         data = response.json()
         history = data.get("history", [])[:limit]
         return [EarningsResult.model_validate(e) for e in history]
@@ -81,5 +78,4 @@ class AsyncEarnings:
             params["to"] = to_date
 
         response = await self._http.get("/vq/earnings/calendar", params=params)
-        response.raise_for_status()
         return [EarningsCalendarEntry.model_validate(e) for e in response.json()["data"]]

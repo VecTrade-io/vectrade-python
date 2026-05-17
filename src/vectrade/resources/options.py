@@ -8,13 +8,13 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.options import OptionsChain
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Options:
     """Synchronous options resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def chain(
@@ -41,7 +41,6 @@ class Options:
             params["type"] = option_type
 
         response = self._http.get(f"/vq/options/{encode_path_param(symbol)}", params=params)
-        response.raise_for_status()
         return OptionsChain.model_validate(response.json())
 
     def expirations(self, symbol: str) -> list[str]:
@@ -54,14 +53,13 @@ class Options:
             List of expiration dates as ISO date strings.
         """
         response = self._http.get(f"/vq/options/{encode_path_param(symbol)}/expirations")
-        response.raise_for_status()
         return response.json()["data"]  # type: ignore[no-any-return]
 
 
 class AsyncOptions:
     """Asynchronous options resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def chain(
@@ -79,11 +77,9 @@ class AsyncOptions:
             params["type"] = option_type
 
         response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}", params=params)
-        response.raise_for_status()
         return OptionsChain.model_validate(response.json())
 
     async def expirations(self, symbol: str) -> list[str]:
         """Get available expiration dates for a symbol."""
         response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}/expirations")
-        response.raise_for_status()
         return response.json()["data"]  # type: ignore[no-any-return]

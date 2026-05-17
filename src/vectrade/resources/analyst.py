@@ -8,13 +8,13 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.analyst import AnalystConsensus, AnalystRating, PriceTarget
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Analyst:
     """Synchronous analyst resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def consensus(self, symbol: str) -> AnalystConsensus:
@@ -27,7 +27,6 @@ class Analyst:
             AnalystConsensus with rating breakdown and average target.
         """
         response = self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/consensus")
-        response.raise_for_status()
         return AnalystConsensus.model_validate(response.json())
 
     def price_targets(self, symbol: str) -> list[PriceTarget]:
@@ -40,7 +39,6 @@ class Analyst:
             List of PriceTarget from individual analysts.
         """
         response = self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/price-targets")
-        response.raise_for_status()
         return [PriceTarget.model_validate(t) for t in response.json()["data"]]
 
     def ratings(self, symbol: str, *, limit: int = 20) -> list[AnalystRating]:
@@ -56,26 +54,23 @@ class Analyst:
         response = self._http.get(
             f"/vq/analyst/{encode_path_param(symbol)}/ratings", params={"limit": str(limit)}
         )
-        response.raise_for_status()
         return [AnalystRating.model_validate(r) for r in response.json()["data"]]
 
 
 class AsyncAnalyst:
     """Asynchronous analyst resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def consensus(self, symbol: str) -> AnalystConsensus:
         """Get analyst consensus rating for a symbol."""
         response = await self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/consensus")
-        response.raise_for_status()
         return AnalystConsensus.model_validate(response.json())
 
     async def price_targets(self, symbol: str) -> list[PriceTarget]:
         """Get individual analyst price targets."""
         response = await self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/price-targets")
-        response.raise_for_status()
         return [PriceTarget.model_validate(t) for t in response.json()["data"]]
 
     async def ratings(self, symbol: str, *, limit: int = 20) -> list[AnalystRating]:
@@ -83,5 +78,4 @@ class AsyncAnalyst:
         response = await self._http.get(
             f"/vq/analyst/{encode_path_param(symbol)}/ratings", params={"limit": str(limit)}
         )
-        response.raise_for_status()
         return [AnalystRating.model_validate(r) for r in response.json()["data"]]

@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      production:
+        patterns:
+          - "httpx"
+          - "pydantic"
+      dev:
+        patterns:
+          - "pytest*"
+          - "ruff"
+          - "mypy"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

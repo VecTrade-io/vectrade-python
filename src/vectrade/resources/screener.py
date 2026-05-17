@@ -8,13 +8,13 @@ from vectrade._pagination import AsyncPaginator, SyncPaginator
 from vectrade.types.screener import ScreenerResult
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Screener:
     """Synchronous screener resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def run(
@@ -62,7 +62,6 @@ class Screener:
             if cursor:
                 params["cursor"] = cursor
             response = self._http.get("/vq/screener", params=params)
-            response.raise_for_status()
             return response.json()  # type: ignore[no-any-return]
 
         return SyncPaginator(fetch_page=fetch_page, model=ScreenerResult)
@@ -71,7 +70,7 @@ class Screener:
 class AsyncScreener:
     """Asynchronous screener resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     def run(
@@ -116,7 +115,6 @@ class AsyncScreener:
             if cursor:
                 params["cursor"] = cursor
             response = await self._http.get("/vq/screener", params=params)
-            response.raise_for_status()
             return response.json()  # type: ignore[no-any-return]
 
         return AsyncPaginator(fetch_page=fetch_page, model=ScreenerResult)

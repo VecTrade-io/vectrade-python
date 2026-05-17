@@ -9,13 +9,13 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.news import NewsArticle
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class News:
     """Synchronous news resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def list(
@@ -31,7 +31,6 @@ class News:
             limit: Number of articles to return (max 100).
         """
         response = self._http.get(f"/vq/news/{encode_path_param(symbol)}")
-        response.raise_for_status()
         data = response.json()
         articles = data.get("articles", [])[:limit]
         return [NewsArticle.model_validate(item) for item in articles]
@@ -44,7 +43,7 @@ class News:
 class AsyncNews:
     """Asynchronous news resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def list(
@@ -55,7 +54,6 @@ class AsyncNews:
     ) -> builtins.list[NewsArticle]:
         """Get latest financial news for a symbol."""
         response = await self._http.get(f"/vq/news/{encode_path_param(symbol)}")
-        response.raise_for_status()
         data = response.json()
         articles = data.get("articles", [])[:limit]
         return [NewsArticle.model_validate(item) for item in articles]

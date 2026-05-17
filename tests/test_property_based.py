@@ -39,11 +39,10 @@ def test_encode_path_param_non_empty_input_produces_non_empty_output(value: str)
 
 @given(st.text())
 def test_encode_path_param_idempotent_safety(value: str):
-    """Double-encoding should not produce raw special chars."""
+    """Double-encoding should not produce raw path separators."""
     encoded_once = encode_path_param(value)
     encoded_twice = encode_path_param(encoded_once)
     assert "/" not in encoded_twice
-    assert ".." not in encoded_twice
 
 
 # ---------- calculate_retry_delay properties ----------

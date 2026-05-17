@@ -20,6 +20,7 @@ from vectrade._exceptions import (
     ServiceUnavailableError,
     ValidationError,
 )
+from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 from vectrade._middleware import (
     AsyncMiddleware,
     AsyncMiddlewareStack,
@@ -239,19 +240,20 @@ class VecTrade(_BaseClient):
         for mw in self._middleware_list:
             self._middleware_stack.use(mw)  # type: ignore[arg-type]
 
-        # Resource namespaces
-        self.quotes = Quotes(self._http)
-        self.fundamentals = Fundamentals(self._http)
-        self.technicals = Technicals(self._http)
-        self.news = News(self._http)
-        self.screener = Screener(self._http)
-        self.ai = AI(self._http)
-        self.webhooks = Webhooks(self._http)
-        self.options = Options(self._http)
-        self.analyst = Analyst(self._http)
-        self.earnings = Earnings(self._http)
-        self.insider = Insider(self._http)
-        self.developer = Developer(self._http)
+        # Resource namespaces — routed through retry + error mapping pipeline
+        _managed = SyncHTTP(self.request, self._http)
+        self.quotes = Quotes(_managed)
+        self.fundamentals = Fundamentals(_managed)
+        self.technicals = Technicals(_managed)
+        self.news = News(_managed)
+        self.screener = Screener(_managed)
+        self.ai = AI(_managed)
+        self.webhooks = Webhooks(_managed)
+        self.options = Options(_managed)
+        self.analyst = Analyst(_managed)
+        self.earnings = Earnings(_managed)
+        self.insider = Insider(_managed)
+        self.developer = Developer(_managed)
 
     def request(
         self,
@@ -418,19 +420,20 @@ class AsyncVecTrade(_BaseClient):
         for mw in self._middleware_list:
             self._middleware_stack.use(mw)  # type: ignore[arg-type]
 
-        # Resource namespaces
-        self.quotes = AsyncQuotes(self._http)
-        self.fundamentals = AsyncFundamentals(self._http)
-        self.technicals = AsyncTechnicals(self._http)
-        self.news = AsyncNews(self._http)
-        self.screener = AsyncScreener(self._http)
-        self.ai = AsyncAI(self._http)
-        self.webhooks = AsyncWebhooks(self._http)
-        self.options = AsyncOptions(self._http)
-        self.analyst = AsyncAnalyst(self._http)
-        self.earnings = AsyncEarnings(self._http)
-        self.insider = AsyncInsider(self._http)
-        self.developer = AsyncDeveloper(self._http)
+        # Resource namespaces — routed through retry + error mapping pipeline
+        _managed = AsyncHTTP(self.request, self._http)
+        self.quotes = AsyncQuotes(_managed)
+        self.fundamentals = AsyncFundamentals(_managed)
+        self.technicals = AsyncTechnicals(_managed)
+        self.news = AsyncNews(_managed)
+        self.screener = AsyncScreener(_managed)
+        self.ai = AsyncAI(_managed)
+        self.webhooks = AsyncWebhooks(_managed)
+        self.options = AsyncOptions(_managed)
+        self.analyst = AsyncAnalyst(_managed)
+        self.earnings = AsyncEarnings(_managed)
+        self.insider = AsyncInsider(_managed)
+        self.developer = AsyncDeveloper(_managed)
 
     async def request(
         self,

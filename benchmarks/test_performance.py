@@ -1,7 +1,5 @@
 """Performance benchmarks for the Python SDK."""
 
-import os
-
 import pytest
 
 from benchmarks.conftest import LATENCY_BUDGETS
@@ -22,7 +20,7 @@ class TestClientInit:
             c = VecTrade()
             c.close()
 
-        result = benchmark(create_client)
+        benchmark(create_client)
         # Assert latency budget
         assert benchmark.stats["mean"] * 1000 < LATENCY_BUDGETS["client_init"]
 
@@ -45,7 +43,7 @@ class TestRetryCalculation:
             for attempt in range(5):
                 calculate_retry_delay(attempt)
 
-        result = benchmark(calc)
+        benchmark(calc)
         assert benchmark.stats["mean"] * 1000 < LATENCY_BUDGETS["retry_delay_calc"]
 
 
@@ -57,4 +55,4 @@ class TestSSEParsing:
 
         line = 'data: {"type":"chunk","content":"Analysis shows positive momentum"}'
 
-        result = benchmark(_parse_sse_line, line)
+        benchmark(_parse_sse_line, line)

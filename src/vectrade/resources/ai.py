@@ -6,7 +6,7 @@ from collections.abc import AsyncGenerator, Generator
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class AIChunk:
@@ -20,7 +20,7 @@ class AIChunk:
 class AI:
     """Synchronous AI analysis resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def stream(self, prompt: str) -> Generator[AIChunk, None, None]:
@@ -51,7 +51,7 @@ class AI:
 class AsyncAI:
     """Asynchronous AI analysis resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def stream(self, prompt: str) -> AsyncGenerator[AIChunk, None]:

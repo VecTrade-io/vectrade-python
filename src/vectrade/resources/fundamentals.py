@@ -8,19 +8,18 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.fundamental import BalanceSheet, FundamentalResponse, IncomeStatement
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Fundamentals:
     """Synchronous fundamentals resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def get(self, symbol: str) -> FundamentalResponse:
         """Get fundamental data for a symbol (PE, EPS, market cap, etc.)."""
         response = self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}")
-        response.raise_for_status()
         return FundamentalResponse.model_validate(response.json())
 
     def income_statement(self, symbol: str, *, period: str = "annual") -> list[IncomeStatement]:
@@ -28,7 +27,6 @@ class Fundamentals:
         response = self._http.get(
             f"/vq/fundamentals/{encode_path_param(symbol)}/income", params={"period": period}
         )
-        response.raise_for_status()
         return [IncomeStatement.model_validate(item) for item in response.json()["data"]]
 
     def balance_sheet(self, symbol: str, *, period: str = "annual") -> list[BalanceSheet]:
@@ -36,19 +34,17 @@ class Fundamentals:
         response = self._http.get(
             f"/vq/fundamentals/{encode_path_param(symbol)}/balance-sheet", params={"period": period}
         )
-        response.raise_for_status()
         return [BalanceSheet.model_validate(item) for item in response.json()["data"]]
 
 
 class AsyncFundamentals:
     """Asynchronous fundamentals resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def get(self, symbol: str) -> FundamentalResponse:
         response = await self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}")
-        response.raise_for_status()
         return FundamentalResponse.model_validate(response.json())
 
     async def income_statement(
@@ -57,12 +53,10 @@ class AsyncFundamentals:
         response = await self._http.get(
             f"/vq/fundamentals/{encode_path_param(symbol)}/income", params={"period": period}
         )
-        response.raise_for_status()
         return [IncomeStatement.model_validate(item) for item in response.json()["data"]]
 
     async def balance_sheet(self, symbol: str, *, period: str = "annual") -> list[BalanceSheet]:
         response = await self._http.get(
             f"/vq/fundamentals/{encode_path_param(symbol)}/balance-sheet", params={"period": period}
         )
-        response.raise_for_status()
         return [BalanceSheet.model_validate(item) for item in response.json()["data"]]

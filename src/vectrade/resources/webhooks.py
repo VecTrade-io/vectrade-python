@@ -12,7 +12,7 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.webhook import WebhookEvent, WebhookSubscription
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 SIGNATURE_HEADER = "x-vq-signature"
 TIMESTAMP_HEADER = "x-vq-timestamp"
@@ -22,7 +22,7 @@ TOLERANCE_SECONDS = 300  # 5 minutes
 class Webhooks:
     """Synchronous webhooks resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def create(
@@ -33,19 +33,16 @@ class Webhooks:
         if description:
             body["description"] = description
         response = self._http.post("/vq/webhooks", json=body)
-        response.raise_for_status()
         return WebhookSubscription.model_validate(response.json())
 
     def list(self) -> list[WebhookSubscription]:
         """List all webhook subscriptions."""
         response = self._http.get("/vq/webhooks")
-        response.raise_for_status()
         return [WebhookSubscription.model_validate(item) for item in response.json()["data"]]
 
     def delete(self, webhook_id: str) -> None:
         """Delete a webhook subscription."""
-        response = self._http.delete(f"/vq/webhooks/{encode_path_param(webhook_id)}")
-        response.raise_for_status()
+        self._http.delete(f"/vq/webhooks/{encode_path_param(webhook_id)}")
 
     @staticmethod
     def verify(payload: str | bytes, headers: dict[str, str], secret: str) -> WebhookEvent:
@@ -94,7 +91,7 @@ class Webhooks:
 class AsyncWebhooks:
     """Asynchronous webhooks resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def create(
@@ -104,16 +101,13 @@ class AsyncWebhooks:
         if description:
             body["description"] = description
         response = await self._http.post("/vq/webhooks", json=body)
-        response.raise_for_status()
         return WebhookSubscription.model_validate(response.json())
 
     async def list(self) -> list[WebhookSubscription]:
         response = await self._http.get("/vq/webhooks")
-        response.raise_for_status()
         return [WebhookSubscription.model_validate(item) for item in response.json()["data"]]
 
     async def delete(self, webhook_id: str) -> None:
-        response = await self._http.delete(f"/vq/webhooks/{encode_path_param(webhook_id)}")
-        response.raise_for_status()
+        await self._http.delete(f"/vq/webhooks/{encode_path_param(webhook_id)}")
 
     verify = Webhooks.verify  # Static method shared

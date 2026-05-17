@@ -8,13 +8,13 @@ from vectrade._utils.encoding import encode_path_param
 from vectrade.types.quote import QuoteResponse
 
 if TYPE_CHECKING:
-    import httpx
+    from vectrade._http_wrapper import AsyncHTTP, SyncHTTP
 
 
 class Quotes:
     """Synchronous quotes resource."""
 
-    def __init__(self, http: httpx.Client) -> None:
+    def __init__(self, http: SyncHTTP) -> None:
         self._http = http
 
     def get(self, symbol: str, *, fields: list[str] | None = None) -> QuoteResponse:
@@ -32,7 +32,6 @@ class Quotes:
             params["fields"] = ",".join(fields)
 
         response = self._http.get(f"/vq/quotes/{encode_path_param(symbol)}", params=params)
-        response.raise_for_status()
         return QuoteResponse.model_validate(response.json())
 
     def batch(self, symbols: list[str]) -> list[QuoteResponse]:
@@ -45,14 +44,13 @@ class Quotes:
             List of QuoteResponse objects.
         """
         response = self._http.get("/vq/quotes/batch", params={"symbols": ",".join(symbols)})
-        response.raise_for_status()
         return [QuoteResponse.model_validate(q) for q in response.json()["data"]]
 
 
 class AsyncQuotes:
     """Asynchronous quotes resource."""
 
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: AsyncHTTP) -> None:
         self._http = http
 
     async def get(self, symbol: str, *, fields: list[str] | None = None) -> QuoteResponse:
@@ -62,11 +60,9 @@ class AsyncQuotes:
             params["fields"] = ",".join(fields)
 
         response = await self._http.get(f"/vq/quotes/{encode_path_param(symbol)}", params=params)
-        response.raise_for_status()
         return QuoteResponse.model_validate(response.json())
 
     async def batch(self, symbols: list[str]) -> list[QuoteResponse]:
         """Get quotes for multiple symbols in a single request."""
         response = await self._http.get("/vq/quotes/batch", params={"symbols": ",".join(symbols)})
-        response.raise_for_status()
         return [QuoteResponse.model_validate(q) for q in response.json()["data"]]
