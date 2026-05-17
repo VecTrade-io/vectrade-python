@@ -426,4 +426,6 @@ class TestSuccessfulRequest:
     def test_post_with_body(self, client: VecTrade) -> None:
         route = respx.post(f"{BASE_URL}/vq/screener").respond(200, json={"data": []})
         client.request("POST", "/vq/screener", json={"marketCapMin": 1e9})
-        assert route.calls[0].request.content == b'{"marketCapMin": 1000000000.0}'
+        import json
+        sent = json.loads(route.calls[0].request.content)
+        assert sent == {"marketCapMin": 1000000000.0}
