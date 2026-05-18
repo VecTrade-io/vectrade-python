@@ -101,6 +101,15 @@ except AuthenticationError as e:
 
 All exceptions include `request_id` and `status_code` for debugging.
 
+## Documentation
+
+Full documentation is available at [docs.vectrade.io/sdks/python](https://docs.vectrade.io/sdks/python).
+
+- [API Reference](https://docs.vectrade.io/api-reference/overview)
+- [Authentication Guide](https://docs.vectrade.io/guides/authentication)
+- [Error Handling](https://docs.vectrade.io/guides/error-handling)
+- [Streaming Guide](https://docs.vectrade.io/guides/streaming)
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
