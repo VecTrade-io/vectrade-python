@@ -14,7 +14,9 @@ class TestExtractResource:
         assert _extract_resource("https://api.vectrade.io/v1/vq/quotes/AAPL") == "quotes"
 
     def test_extracts_fundamentals(self) -> None:
-        assert _extract_resource("https://api.vectrade.io/v1/vq/fundamentals/MSFT") == "fundamentals"
+        assert (
+            _extract_resource("https://api.vectrade.io/v1/vq/fundamentals/MSFT") == "fundamentals"
+        )
 
     def test_extracts_screener(self) -> None:
         assert _extract_resource("https://api.vectrade.io/v1/vq/screener") == "screener"
@@ -67,7 +69,9 @@ class TestOpenTelemetryMiddleware:
             headers={"X-API-Key": "vq_test_key"},
         )
 
-    def _make_response_context(self, request: RequestContext, status_code: int = 200) -> ResponseContext:
+    def _make_response_context(
+        self, request: RequestContext, status_code: int = 200
+    ) -> ResponseContext:
         return ResponseContext(
             status_code=status_code,
             headers={"X-Request-Id": "req-123", "X-VQ-RateLimit-Remaining": "99"},

@@ -17,7 +17,9 @@ from vectrade._middleware import (
 BASE_URL = "https://api.vectrade.io/v1"
 
 
-def _make_request(method: str = "GET", url: str = "https://api.vectrade.io/v1/vq/quotes/AAPL") -> RequestContext:
+def _make_request(
+    method: str = "GET", url: str = "https://api.vectrade.io/v1/vq/quotes/AAPL"
+) -> RequestContext:
     return RequestContext(method=method, url=url, headers={"X-API-Key": "vq_test"})
 
 
@@ -25,7 +27,7 @@ def _make_response(request: RequestContext, status: int = 200) -> ResponseContex
     return ResponseContext(
         status_code=status,
         headers={"Content-Type": "application/json"},
-        body=b'{}',
+        body=b"{}",
         elapsed_ms=10.0,
         request=request,
     )

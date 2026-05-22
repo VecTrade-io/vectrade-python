@@ -76,7 +76,9 @@ class AsyncOptions:
         if option_type:
             params["type"] = option_type
 
-        response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}/chain", params=params)
+        response = await self._http.get(
+            f"/vq/options/{encode_path_param(symbol)}/chain", params=params
+        )
         return OptionsChain.model_validate(response.json())
 
     async def expirations(self, symbol: str) -> list[str]:

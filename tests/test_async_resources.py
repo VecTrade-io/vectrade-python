@@ -229,7 +229,9 @@ class TestAsyncOptions:
                 "puts": [],
             },
         )
-        chain = await async_client.options.chain("AAPL", expiration="2026-06-20", option_type="call")
+        chain = await async_client.options.chain(
+            "AAPL", expiration="2026-06-20", option_type="call"
+        )
         assert chain.symbol == "AAPL"
 
     @respx.mock
@@ -273,7 +275,13 @@ class TestAsyncAnalyst:
             200,
             json={
                 "ticker": "AAPL",
-                "targets": {"current": 195.0, "high": 250.0, "low": 180.0, "mean": 215.0, "median": 218.0},
+                "targets": {
+                    "current": 195.0,
+                    "high": 250.0,
+                    "low": 180.0,
+                    "mean": 215.0,
+                    "median": 218.0,
+                },
                 "source": "yfinance",
                 "timestamp": "2026-05-10T14:00:00Z",
             },

@@ -60,9 +60,7 @@ class BalanceSheet(BaseModel):
     total_liabilities: float | None = Field(
         default=None, validation_alias="Total Liabilities Net Minority Interest"
     )
-    total_equity: float | None = Field(
-        default=None, validation_alias="Stockholders Equity"
-    )
+    total_equity: float | None = Field(default=None, validation_alias="Stockholders Equity")
     cash_and_equivalents: float | None = Field(
         default=None, validation_alias="Cash And Cash Equivalents"
     )

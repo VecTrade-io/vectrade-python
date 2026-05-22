@@ -99,9 +99,7 @@ class TestEarningsSyncExtras:
 
     @respx.mock
     def test_calendar_empty(self, client) -> None:
-        respx.get(f"{BASE_URL}/vq/earnings/calendar").respond(
-            200, json={"data": []}
-        )
+        respx.get(f"{BASE_URL}/vq/earnings/calendar").respond(200, json={"data": []})
         entries = client.earnings.calendar(from_date="2026-12-25", to_date="2026-12-26")
         assert entries == []
 
