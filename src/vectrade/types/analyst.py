@@ -20,7 +20,7 @@ class AnalystConsensus(BaseModel):
     sell: int = 0
     signal: str | None = None
     consensus_score: float | None = None
-    ratings: dict | None = None
+    ratings: dict[str, int] | None = None
     target_price: float | None = None
 
     model_config = {"populate_by_name": True}
@@ -30,7 +30,7 @@ class PriceTarget(BaseModel):
     """Aggregated analyst price targets for a symbol."""
 
     symbol: str = Field(alias="ticker")
-    targets: dict  # {"current", "high", "low", "mean", "median"}
+    targets: dict[str, float | None]  # {"current", "high", "low", "mean", "median"}
     source: str | None = None
     timestamp: str | None = None
 

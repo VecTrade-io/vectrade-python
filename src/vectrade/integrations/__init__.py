@@ -145,7 +145,7 @@ class VecTradeToolkit:
     def _make_tool(name: str, description: str, func: Any) -> Any:
         """Create a simple tool-like object compatible with LangChain."""
         try:
-            from langchain_core.tools import StructuredTool
+            from langchain_core.tools import StructuredTool  # type: ignore[import-not-found]
 
             return StructuredTool.from_function(
                 func=func,
