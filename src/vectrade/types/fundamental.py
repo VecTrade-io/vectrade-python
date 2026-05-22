@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import datetime
 
 from pydantic import BaseModel, Field
 
@@ -32,25 +32,38 @@ class FundamentalResponse(BaseModel):
 
 
 class IncomeStatement(BaseModel):
-    """Income statement data."""
+    """Income statement data (raw from collector)."""
 
-    fiscal_date: date
-    period: str  # "annual" | "quarterly"
-    revenue: float | None = None
-    gross_profit: float | None = None
-    operating_income: float | None = None
-    net_income: float | None = None
-    eps_basic: float | None = None
-    eps_diluted: float | None = None
+    model_config = {"extra": "allow", "populate_by_name": True}
+
+    period: str = ""  # fiscal period end date e.g. "2024-09-30"
+    total_revenue: float | None = Field(default=None, validation_alias="Total Revenue")
+    gross_profit: float | None = Field(default=None, validation_alias="Gross Profit")
+    operating_income: float | None = Field(default=None, validation_alias="Operating Income")
+    net_income: float | None = Field(default=None, validation_alias="Net Income")
+    basic_eps: float | None = Field(default=None, validation_alias="Basic EPS")
+    diluted_eps: float | None = Field(default=None, validation_alias="Diluted EPS")
+    ebitda: float | None = Field(default=None, validation_alias="EBITDA")
+    cost_of_revenue: float | None = Field(default=None, validation_alias="Cost Of Revenue")
+    research_and_development: float | None = Field(
+        default=None, validation_alias="Research And Development"
+    )
 
 
 class BalanceSheet(BaseModel):
-    """Balance sheet data."""
+    """Balance sheet data (raw from collector)."""
 
-    fiscal_date: date
-    period: str
-    total_assets: float | None = None
-    total_liabilities: float | None = None
-    total_equity: float | None = None
-    cash_and_equivalents: float | None = None
-    total_debt: float | None = None
+    model_config = {"extra": "allow", "populate_by_name": True}
+
+    period: str = ""  # fiscal period end date
+    total_assets: float | None = Field(default=None, validation_alias="Total Assets")
+    total_liabilities: float | None = Field(
+        default=None, validation_alias="Total Liabilities Net Minority Interest"
+    )
+    total_equity: float | None = Field(
+        default=None, validation_alias="Stockholders Equity"
+    )
+    cash_and_equivalents: float | None = Field(
+        default=None, validation_alias="Cash And Cash Equivalents"
+    )
+    total_debt: float | None = Field(default=None, validation_alias="Total Debt")

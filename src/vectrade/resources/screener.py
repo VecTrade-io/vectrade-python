@@ -58,10 +58,10 @@ class Screener:
             filters["industry"] = industry
 
         def fetch_page(cursor: str | None = None) -> dict[str, Any]:
-            params = {**filters}
+            body = {**filters}
             if cursor:
-                params["cursor"] = cursor
-            response = self._http.get("/vq/screener", params=params)
+                body["cursor"] = cursor
+            response = self._http.post("/vq/screener/filter", json=body)
             return response.json()  # type: ignore[no-any-return]
 
         return SyncPaginator(fetch_page=fetch_page, model=ScreenerResult)
@@ -111,10 +111,10 @@ class AsyncScreener:
             filters["industry"] = industry
 
         async def fetch_page(cursor: str | None = None) -> dict[str, Any]:
-            params = {**filters}
+            body = {**filters}
             if cursor:
-                params["cursor"] = cursor
-            response = await self._http.get("/vq/screener", params=params)
+                body["cursor"] = cursor
+            response = await self._http.post("/vq/screener/filter", json=body)
             return response.json()  # type: ignore[no-any-return]
 
         return AsyncPaginator(fetch_page=fetch_page, model=ScreenerResult)

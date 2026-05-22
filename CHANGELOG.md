@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Options resource: corrected endpoint path to `/vq/options/{symbol}/chain` and response parsing for calls/puts arrays
+- Analyst resource: fixed paths to `/vq/analyst-consensus/`, `/vq/analyst-targets/`, `/vq/upgrades-downgrades/`
+- Fundamentals resource: aligned with nested `income_statement.earnings` and `balance_sheet.earnings` response structure
+- Screener resource: changed to POST `/vq/screener/filter` with JSON body
+- Options types: added camelCase aliases, nullable volume/openInterest fields
+- Analyst types: corrected `ticker` alias, `ratings` dict, `targets` dict structure
+- Fundamental types: updated to capitalized field names ("Total Revenue", "Total Assets"), added `extra="allow"`
+
+### Added
+
+- Developer self-service endpoints: `get_plan()`, `get_usage()`, `get_daily_usage()`, `get_quota()`, `list_keys()`, `create_key()`, `revoke_key()`
+- Full plan-level quota enforcement and consumption tracking
+
 ## [0.1.0] - 2026-05-17
 
 ### Added

@@ -6,34 +6,31 @@ import respx
 from vectrade import VecTrade
 
 MOCK_CONSENSUS = {
-    "symbol": "AAPL",
-    "consensus": "Buy",
-    "target_high": 250.0,
-    "target_low": 180.0,
-    "target_mean": 215.0,
-    "target_median": 218.0,
+    "ticker": "AAPL",
+    "consensus": "BUY",
+    "signal": "buy",
+    "consensus_score": 4.2,
     "total_analysts": 42,
+    "ratings": {"strong_buy": 20, "buy": 10, "hold": 10, "sell": 2, "strong_sell": 0},
+    "target_price": 215.0,
     "buy": 30,
     "hold": 10,
     "sell": 2,
 }
 
 MOCK_PRICE_TARGET = {
-    "analyst_name": "John Smith",
-    "firm": "Goldman Sachs",
-    "target": 230.0,
-    "rating": "Buy",
-    "published_at": "2026-05-10T08:30:00Z",
+    "ticker": "AAPL",
+    "targets": {"current": 195.0, "high": 250.0, "low": 180.0, "mean": 215.0, "median": 218.0},
+    "source": "yfinance",
+    "timestamp": "2026-05-10T08:30:00Z",
 }
 
 MOCK_RATING = {
-    "analyst_name": "Jane Doe",
     "firm": "Morgan Stanley",
-    "action": "upgraded",
-    "from_rating": "Hold",
-    "to_rating": "Buy",
-    "target": 225.0,
-    "published_at": "2026-05-12T06:00:00Z",
+    "action": "up",
+    "to_grade": "Buy",
+    "from_grade": "Hold",
+    "date": "2026-05-12",
 }
 
 
@@ -42,15 +39,14 @@ class TestAnalystConsensus:
 
     def test_get_consensus(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Fetches analyst consensus."""
-        route = mock_api.get("/vq/analyst/AAPL/consensus").mock(
+        route = mock_api.get("/vq/analyst-consensus/AAPL").mock(
             return_value=httpx.Response(200, json=MOCK_CONSENSUS)
         )
         consensus = client.analyst.consensus("AAPL")
         assert route.called
         assert consensus.symbol == "AAPL"
-        assert consensus.consensus == "Buy"
+        assert consensus.consensus == "BUY"
         assert consensus.total_analysts == 42
-        assert consensus.buy == 30
 
 
 class TestAnalystPriceTargets:
@@ -58,14 +54,14 @@ class TestAnalystPriceTargets:
 
     def test_get_price_targets(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Fetches analyst price targets."""
-        route = mock_api.get("/vq/analyst/AAPL/price-targets").mock(
-            return_value=httpx.Response(200, json={"data": [MOCK_PRICE_TARGET]})
+        route = mock_api.get("/vq/analyst-targets/AAPL").mock(
+            return_value=httpx.Response(200, json=MOCK_PRICE_TARGET)
         )
         targets = client.analyst.price_targets("AAPL")
         assert route.called
         assert len(targets) == 1
-        assert targets[0].firm == "Goldman Sachs"
-        assert targets[0].target == 230.0
+        assert targets[0].symbol == "AAPL"
+        assert targets[0].targets["high"] == 250.0
 
 
 class TestAnalystRatings:
@@ -73,22 +69,20 @@ class TestAnalystRatings:
 
     def test_get_ratings(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Fetches recent rating changes."""
-        route = mock_api.get("/vq/analyst/AAPL/ratings").mock(
-            return_value=httpx.Response(200, json={"data": [MOCK_RATING]})
+        route = mock_api.get("/vq/upgrades-downgrades/AAPL").mock(
+            return_value=httpx.Response(200, json={"upgrades_downgrades": [MOCK_RATING]})
         )
         ratings = client.analyst.ratings("AAPL")
         assert route.called
         assert len(ratings) == 1
-        assert ratings[0].action == "upgraded"
-        assert ratings[0].from_rating == "Hold"
-        assert ratings[0].to_rating == "Buy"
+        assert ratings[0].action == "up"
+        assert ratings[0].from_grade == "Hold"
+        assert ratings[0].to_grade == "Buy"
 
     def test_ratings_with_limit(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Passes limit parameter."""
-        route = mock_api.get("/vq/analyst/AAPL/ratings").mock(
-            return_value=httpx.Response(200, json={"data": []})
+        route = mock_api.get("/vq/upgrades-downgrades/AAPL").mock(
+            return_value=httpx.Response(200, json={"upgrades_downgrades": []})
         )
         client.analyst.ratings("AAPL", limit=5)
         assert route.called
-        request = route.calls.last.request
-        assert "limit=5" in str(request.url)

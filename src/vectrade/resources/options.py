@@ -40,7 +40,7 @@ class Options:
         if option_type:
             params["type"] = option_type
 
-        response = self._http.get(f"/vq/options/{encode_path_param(symbol)}", params=params)
+        response = self._http.get(f"/vq/options/{encode_path_param(symbol)}/chain", params=params)
         return OptionsChain.model_validate(response.json())
 
     def expirations(self, symbol: str) -> list[str]:
@@ -53,7 +53,7 @@ class Options:
             List of expiration dates as ISO date strings.
         """
         response = self._http.get(f"/vq/options/{encode_path_param(symbol)}/expirations")
-        return response.json()["data"]  # type: ignore[no-any-return]
+        return response.json()["expirations"]  # type: ignore[no-any-return]
 
 
 class AsyncOptions:
@@ -76,10 +76,10 @@ class AsyncOptions:
         if option_type:
             params["type"] = option_type
 
-        response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}", params=params)
+        response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}/chain", params=params)
         return OptionsChain.model_validate(response.json())
 
     async def expirations(self, symbol: str) -> list[str]:
         """Get available expiration dates for a symbol."""
         response = await self._http.get(f"/vq/options/{encode_path_param(symbol)}/expirations")
-        return response.json()["data"]  # type: ignore[no-any-return]
+        return response.json()["expirations"]  # type: ignore[no-any-return]

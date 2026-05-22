@@ -48,36 +48,43 @@ class TestFundamentals:
 
     @respx.mock
     def test_income_statement(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/fundamentals/AAPL/income").respond(
+        respx.get(f"{BASE_URL}/vq/fundamentals/AAPL/statements").respond(
             200,
             json={
-                "data": [
-                    {
-                        "fiscal_date": "2025-09-30",
-                        "period": "annual",
-                        "revenue": 400000000000,
-                        "net_income": 100000000000,
-                    }
-                ]
+                "ticker": "AAPL",
+                "income_statement": {
+                    "ticker": "AAPL",
+                    "earnings": [
+                        {
+                            "period": "2025-09-30",
+                            "Total Revenue": 400000000000,
+                            "Net Income": 100000000000,
+                            "Gross Profit": 180000000000,
+                        }
+                    ],
+                },
             },
         )
         stmts = client.fundamentals.income_statement("AAPL")
         assert len(stmts) == 1
-        assert stmts[0].revenue == 400000000000
+        assert stmts[0].total_revenue == 400000000000
 
     @respx.mock
     def test_balance_sheet(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/fundamentals/AAPL/balance-sheet").respond(
+        respx.get(f"{BASE_URL}/vq/fundamentals/AAPL/statements").respond(
             200,
             json={
-                "data": [
-                    {
-                        "fiscal_date": "2025-09-30",
-                        "period": "annual",
-                        "total_assets": 350000000000,
-                        "total_equity": 60000000000,
-                    }
-                ]
+                "ticker": "AAPL",
+                "balance_sheet": {
+                    "ticker": "AAPL",
+                    "earnings": [
+                        {
+                            "period": "2025-09-30",
+                            "Total Assets": 350000000000,
+                            "Stockholders Equity": 60000000000,
+                        }
+                    ],
+                },
             },
         )
         sheets = client.fundamentals.balance_sheet("AAPL")

@@ -19,7 +19,7 @@ def client(monkeypatch: pytest.MonkeyPatch) -> VecTrade:
 class TestScreener:
     @respx.mock
     def test_run_returns_paginator(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/screener").respond(
+        respx.post(f"{BASE_URL}/vq/screener/filter").respond(
             200,
             json={
                 "data": [
@@ -48,7 +48,7 @@ class TestScreener:
     @respx.mock
     def test_run_paginates(self, client: VecTrade) -> None:
         # Page 1
-        respx.get(f"{BASE_URL}/vq/screener").mock(
+        respx.post(f"{BASE_URL}/vq/screener/filter").mock(
             side_effect=[
                 respx.MockResponse(
                     200,

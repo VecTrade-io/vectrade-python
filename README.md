@@ -101,6 +101,47 @@ except AuthenticationError as e:
 
 All exceptions include `request_id` and `status_code` for debugging.
 
+## Developer Self-Service
+
+Manage your API keys and monitor usage programmatically:
+
+```python
+# Check your plan and quota
+plan = vt.developer.get_plan()
+print(f"Plan: {plan.plan_name}, Quota: {plan.monthly_quota}")
+
+quota = vt.developer.get_quota()
+print(f"Used: {quota.used}/{quota.monthly_quota} ({quota.usage_pct}%)")
+
+# Manage API keys
+keys = vt.developer.list_keys()
+new_key = vt.developer.create_key(label="production", scopes="quotes,options")
+vt.developer.revoke_key(key_id=new_key.id)
+```
+
+## Pagination
+
+Use the built-in pagination helpers for list endpoints:
+
+```python
+# Screener with pagination
+results = vt.screener.filter(
+    market_cap_min=1_000_000_000,
+    sector="Technology",
+    limit=50,
+    offset=0,
+)
+```
+
+## Rate Limits
+
+The SDK automatically handles rate limiting with exponential backoff. You can also check your limits:
+
+```python
+quota = vt.developer.get_quota()
+print(f"Remaining: {quota.remaining} requests this period")
+```
+
 ## Documentation
 
 Full documentation is available at [docs.vectrade.io/sdks/python](https://docs.vectrade.io/sdks/python).
@@ -109,6 +150,27 @@ Full documentation is available at [docs.vectrade.io/sdks/python](https://docs.v
 - [Authentication Guide](https://docs.vectrade.io/guides/authentication)
 - [Error Handling](https://docs.vectrade.io/guides/error-handling)
 - [Streaming Guide](https://docs.vectrade.io/guides/streaming)
+- [Examples](examples/) — runnable scripts for common use cases
+
+## Versioning
+
+This SDK follows [Semantic Versioning](https://semver.org/):
+
+- **MAJOR** — breaking changes to public API
+- **MINOR** — new features, backward-compatible
+- **PATCH** — bug fixes, backward-compatible
+
+Pre-1.0 releases may include breaking changes in MINOR versions. Pin your dependency accordingly:
+
+```toml
+# pyproject.toml
+dependencies = ["vectrade>=0.1,<0.2"]
+```
+
+## Requirements
+
+- Python 3.9+
+- No system dependencies — pure Python
 
 ## Contributing
 

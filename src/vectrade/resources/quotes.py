@@ -44,7 +44,9 @@ class Quotes:
             List of QuoteResponse objects.
         """
         response = self._http.get("/vq/quotes/batch", params={"symbols": ",".join(symbols)})
-        return [QuoteResponse.model_validate(q) for q in response.json()["data"]]
+        data = response.json()["data"]
+        items = data.values() if isinstance(data, dict) else data
+        return [QuoteResponse.model_validate(q) for q in items]
 
 
 class AsyncQuotes:
@@ -65,4 +67,6 @@ class AsyncQuotes:
     async def batch(self, symbols: list[str]) -> list[QuoteResponse]:
         """Get quotes for multiple symbols in a single request."""
         response = await self._http.get("/vq/quotes/batch", params={"symbols": ",".join(symbols)})
-        return [QuoteResponse.model_validate(q) for q in response.json()["data"]]
+        data = response.json()["data"]
+        items = data.values() if isinstance(data, dict) else data
+        return [QuoteResponse.model_validate(q) for q in items]

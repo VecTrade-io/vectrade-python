@@ -26,7 +26,7 @@ class Analyst:
         Returns:
             AnalystConsensus with rating breakdown and average target.
         """
-        response = self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/consensus")
+        response = self._http.get(f"/vq/analyst-consensus/{encode_path_param(symbol)}")
         return AnalystConsensus.model_validate(response.json())
 
     def price_targets(self, symbol: str) -> list[PriceTarget]:
@@ -38,8 +38,9 @@ class Analyst:
         Returns:
             List of PriceTarget from individual analysts.
         """
-        response = self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/price-targets")
-        return [PriceTarget.model_validate(t) for t in response.json()["data"]]
+        response = self._http.get(f"/vq/analyst-targets/{encode_path_param(symbol)}")
+        data = response.json()
+        return [PriceTarget.model_validate(data)]
 
     def ratings(self, symbol: str, *, limit: int = 20) -> list[AnalystRating]:
         """Get recent analyst rating changes.
@@ -51,10 +52,9 @@ class Analyst:
         Returns:
             List of AnalystRating entries.
         """
-        response = self._http.get(
-            f"/vq/analyst/{encode_path_param(symbol)}/ratings", params={"limit": str(limit)}
-        )
-        return [AnalystRating.model_validate(r) for r in response.json()["data"]]
+        response = self._http.get(f"/vq/upgrades-downgrades/{encode_path_param(symbol)}")
+        data = response.json()
+        return [AnalystRating.model_validate(r) for r in data["upgrades_downgrades"][:limit]]
 
 
 class AsyncAnalyst:
@@ -65,17 +65,17 @@ class AsyncAnalyst:
 
     async def consensus(self, symbol: str) -> AnalystConsensus:
         """Get analyst consensus rating for a symbol."""
-        response = await self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/consensus")
+        response = await self._http.get(f"/vq/analyst-consensus/{encode_path_param(symbol)}")
         return AnalystConsensus.model_validate(response.json())
 
     async def price_targets(self, symbol: str) -> list[PriceTarget]:
         """Get individual analyst price targets."""
-        response = await self._http.get(f"/vq/analyst/{encode_path_param(symbol)}/price-targets")
-        return [PriceTarget.model_validate(t) for t in response.json()["data"]]
+        response = await self._http.get(f"/vq/analyst-targets/{encode_path_param(symbol)}")
+        data = response.json()
+        return [PriceTarget.model_validate(data)]
 
     async def ratings(self, symbol: str, *, limit: int = 20) -> list[AnalystRating]:
         """Get recent analyst rating changes."""
-        response = await self._http.get(
-            f"/vq/analyst/{encode_path_param(symbol)}/ratings", params={"limit": str(limit)}
-        )
-        return [AnalystRating.model_validate(r) for r in response.json()["data"]]
+        response = await self._http.get(f"/vq/upgrades-downgrades/{encode_path_param(symbol)}")
+        data = response.json()
+        return [AnalystRating.model_validate(r) for r in data["upgrades_downgrades"][:limit]]

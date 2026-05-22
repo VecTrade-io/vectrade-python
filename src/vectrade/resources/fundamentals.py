@@ -25,16 +25,22 @@ class Fundamentals:
     def income_statement(self, symbol: str, *, period: str = "annual") -> list[IncomeStatement]:
         """Get income statements (annual or quarterly)."""
         response = self._http.get(
-            f"/vq/fundamentals/{encode_path_param(symbol)}/income", params={"period": period}
+            f"/vq/fundamentals/{encode_path_param(symbol)}/statements", params={"period": period}
         )
-        return [IncomeStatement.model_validate(item) for item in response.json()["data"]]
+        data = response.json()
+        raw = data.get("income_statement", {})
+        earnings = raw.get("earnings", []) if isinstance(raw, dict) else []
+        return [IncomeStatement.model_validate(item) for item in earnings]
 
     def balance_sheet(self, symbol: str, *, period: str = "annual") -> list[BalanceSheet]:
         """Get balance sheets (annual or quarterly)."""
         response = self._http.get(
-            f"/vq/fundamentals/{encode_path_param(symbol)}/balance-sheet", params={"period": period}
+            f"/vq/fundamentals/{encode_path_param(symbol)}/statements", params={"period": period}
         )
-        return [BalanceSheet.model_validate(item) for item in response.json()["data"]]
+        data = response.json()
+        raw = data.get("balance_sheet", {})
+        entries = raw.get("earnings", []) if isinstance(raw, dict) else []
+        return [BalanceSheet.model_validate(item) for item in entries]
 
 
 class AsyncFundamentals:
@@ -51,12 +57,18 @@ class AsyncFundamentals:
         self, symbol: str, *, period: str = "annual"
     ) -> list[IncomeStatement]:
         response = await self._http.get(
-            f"/vq/fundamentals/{encode_path_param(symbol)}/income", params={"period": period}
+            f"/vq/fundamentals/{encode_path_param(symbol)}/statements", params={"period": period}
         )
-        return [IncomeStatement.model_validate(item) for item in response.json()["data"]]
+        data = response.json()
+        raw = data.get("income_statement", {})
+        earnings = raw.get("earnings", []) if isinstance(raw, dict) else []
+        return [IncomeStatement.model_validate(item) for item in earnings]
 
     async def balance_sheet(self, symbol: str, *, period: str = "annual") -> list[BalanceSheet]:
         response = await self._http.get(
-            f"/vq/fundamentals/{encode_path_param(symbol)}/balance-sheet", params={"period": period}
+            f"/vq/fundamentals/{encode_path_param(symbol)}/statements", params={"period": period}
         )
-        return [BalanceSheet.model_validate(item) for item in response.json()["data"]]
+        data = response.json()
+        raw = data.get("balance_sheet", {})
+        entries = raw.get("earnings", []) if isinstance(raw, dict) else []
+        return [BalanceSheet.model_validate(item) for item in entries]
