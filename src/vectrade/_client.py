@@ -149,6 +149,14 @@ class _BaseClient:
                 message = err.get("message", message)
                 error_type = err.get("type")
                 docs_url = err.get("docs_url")
+            # VecTrade auth gateway format: { error: "code", message: "...", ... }
+            elif isinstance(body.get("error"), str) and isinstance(body.get("message"), str):
+                error_code = body["error"]
+                error_type = body["error"]
+                message = body["message"]
+                details = {k: v for k, v in body.items() if k not in ("error", "message")}
+                body_retry_after = body.get("retry_after_seconds")
+                docs_url = body.get("docs") or body.get("upgrade_url")
         except Exception:
             pass  # Non-JSON body — use response.text
 
@@ -174,7 +182,6 @@ class _BaseClient:
             raise PaymentRequiredError(message, **common_kwargs)
         elif status == 403:
             # 403 can be auth OR quota exceeded (BLOCK overage policy).
-            # Finance uses AUTH_002 for both — detect quota by message content.
             _msg_lower = message.lower()
             if "quota" in _msg_lower or error_type == "quota_exceeded":
                 raise QuotaExceededError(
@@ -184,6 +191,8 @@ class _BaseClient:
                     overage_policy="BLOCK",
                     **common_kwargs,
                 )
+            if error_type == "ai_access_denied":
+                raise PaymentRequiredError(message, **common_kwargs)
             raise AuthenticationError(message, **common_kwargs)
         elif status == 404:
             raise NotFoundError(message, **common_kwargs)
@@ -195,7 +204,11 @@ class _BaseClient:
 
             # Distinguish rate limit from quota exceeded
             _msg_lower = message.lower()
-            if "quota" in _msg_lower or error_type == "quota_exceeded":
+            if "quota" in _msg_lower or error_type in (
+                "quota_exceeded",
+                "token_quota_exceeded",
+                "ai_daily_limit_exceeded",
+            ):
                 raise QuotaExceededError(
                     message,
                     quota_limit=int(quota_limit_hdr) if quota_limit_hdr else None,

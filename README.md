@@ -29,7 +29,63 @@ pip install "vectrade[pandas]"       # DataFrame support
 pip install "vectrade[telemetry]"    # OpenTelemetry tracing
 ```
 
+## Authentication
+
+All API requests require a valid API key passed via the `X-API-Key` header. The SDK handles this automatically.
+
+### Getting Your API Key
+
+1. Sign up at [vectrade.io/register](https://vectrade.io/register) (free tier includes 10,000 requests/month)
+2. Navigate to [Developer Dashboard](https://vectrade.io/vtrade/developer) to view/create keys
+3. Keys follow the format `vq_<random>` (e.g., `vq_xS42eF9Pa9ZOD3MRwuszYf5tTmdrEP7...`)
+
+### Configuring the SDK
+
+```python
+import os
+from vectrade import VecTrade
+
+# Option 1: Environment variable (recommended)
+os.environ["VECTRADE_API_KEY"] = "vq_live_..."
+vt = VecTrade()  # auto-reads VECTRADE_API_KEY
+
+# Option 2: Explicit parameter
+vt = VecTrade(api_key="vq_live_...")
+```
+
+> **Security:** Never hardcode API keys in source code. Use environment variables or a secrets manager.
+
+### Plan Limits & Enforcement
+
+Each API key is bound to a subscription plan with the following enforced limits:
+
+| Limit | Free | Standard | Professional |
+|-------|------|----------|--------------|
+| API calls/month | 10,000 | 100,000 | 500,000 |
+| Requests/minute (RPM) | 20 | 120 | 300 |
+| Requests/second (RPS) | 2 | 10 | 25 |
+| Monthly tokens | — | 1,000,000 | 5,000,000 |
+| AI prompts/day | 5 | Unlimited | Unlimited |
+| API keys | 1 | 5 | 20 |
+| Key scopes | ✓ | ✓ | ✓ |
+
+When a limit is exceeded, the API returns a `429` status with a descriptive error body.
+
+### Error Responses for Auth Issues
+
+| Scenario | HTTP Status | SDK Exception |
+|----------|------------|---------------|
+| Missing API key | 401 | `AuthenticationError` |
+| Invalid/expired/revoked key | 403 | `AuthenticationError` |
+| Monthly quota exceeded | 429 | `QuotaExceededError` |
+| Token quota exceeded | 429 | `QuotaExceededError` |
+| RPM/RPS rate limit exceeded | 429 | `RateLimitError` |
+| AI access denied (plan) | 403 | `PaymentRequiredError` |
+| Scope denied (key restriction) | 403 | `AuthenticationError` |
+
 ## Quick Start
+
+> **Prerequisite:** You need a VecTrade API key. See [Authentication](#authentication) below.
 
 ```python
 from vectrade import VecTrade
@@ -87,19 +143,37 @@ vt = VecTrade(
 The SDK raises typed exceptions for all API errors:
 
 ```python
-from vectrade import VecTrade, RateLimitError, AuthenticationError, NotFoundError
+from vectrade import (
+    VecTrade,
+    AuthenticationError,
+    RateLimitError,
+    QuotaExceededError,
+    NotFoundError,
+    PaymentRequiredError,
+)
+
+vt = VecTrade()
 
 try:
-    quote = vt.quotes.get("INVALID")
-except NotFoundError as e:
-    print(f"Symbol not found: {e}")
-except RateLimitError as e:
-    print(f"Rate limited. Retry after {e.retry_after}s")
+    quote = vt.quotes.get("AAPL")
 except AuthenticationError as e:
-    print(f"Bad API key: {e}")
+    # 401: missing key, 403: invalid/expired/revoked key or scope denied
+    print(f"Auth failed ({e.status_code}): {e.message}")
+except QuotaExceededError as e:
+    # 429: monthly request or token quota exhausted
+    print(f"Quota exceeded: {e.message}")
+except RateLimitError as e:
+    # 429: RPM or RPS burst limit hit
+    print(f"Rate limited. Retry after {e.retry_after}s")
+except PaymentRequiredError as e:
+    # 402/403: feature not available on current plan (e.g., AI access)
+    print(f"Upgrade required: {e.message}")
+except NotFoundError as e:
+    # 404: resource not found
+    print(f"Not found: {e.message}")
 ```
 
-All exceptions include `request_id` and `status_code` for debugging.
+All exceptions include `status_code`, `message`, and `request_id` for debugging.
 
 ## Developer Self-Service
 
