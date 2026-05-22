@@ -104,10 +104,10 @@ class QuotaInfo:
 
 DEFAULT_TIERS: dict[str, dict[str, Any]] = {
     "free": {
-        "rate_limit_rpm": 30,
+        "rate_limit_rpm": 20,
         "rate_limit_rps": 2,
         "monthly_quota": 10_000,
-        "max_keys": 0,
+        "max_keys": 1,
         "monthly_price_usd": 0,
         "overage_policy": "BLOCK",
         "metering_type": "prompt",
