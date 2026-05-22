@@ -387,7 +387,11 @@ class VecTrade(_BaseClient):
             ServerError: If the health endpoint returns 5xx.
             httpx.TransportError: If the service is unreachable.
         """
-        response = self._http.get("/health", timeout=timeout)
+        # Health endpoint is at the server root, not under the versioned path
+        base = self._http.base_url
+        authority = f"{base.host}:{base.port}" if base.port else base.host
+        health_url = f"{base.scheme}://{authority}/health"
+        response = self._http.get(health_url, timeout=timeout)
         self._raise_for_status(response)
         return response.json()  # type: ignore[no-any-return]
 
@@ -569,7 +573,11 @@ class AsyncVecTrade(_BaseClient):
             ServerError: If the health endpoint returns 5xx.
             httpx.TransportError: If the service is unreachable.
         """
-        response = await self._http.get("/health", timeout=timeout)
+        # Health endpoint is at the server root, not under the versioned path
+        base = self._http.base_url
+        authority = f"{base.host}:{base.port}" if base.port else base.host
+        health_url = f"{base.scheme}://{authority}/health"
+        response = await self._http.get(health_url, timeout=timeout)
         self._raise_for_status(response)
         return response.json()  # type: ignore[no-any-return]
 
