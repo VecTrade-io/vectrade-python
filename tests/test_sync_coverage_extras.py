@@ -1,7 +1,7 @@
 """Additional sync resource tests to fill remaining coverage gaps."""
 
-import respx
 import pytest
+import respx
 from httpx import Response
 
 from vectrade import VecTrade

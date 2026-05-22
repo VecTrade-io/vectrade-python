@@ -2,20 +2,18 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from vectrade.integrations import VecTradeToolkit
 
 
 class TestVecTradeToolkit:
     @patch("vectrade.integrations.VecTrade")
     def test_init_creates_client(self, mock_client_cls) -> None:
-        toolkit = VecTradeToolkit(api_key="vq_test_key123456789")
+        VecTradeToolkit(api_key="vq_test_key123456789")
         mock_client_cls.assert_called_once_with(api_key="vq_test_key123456789", sandbox=False)
 
     @patch("vectrade.integrations.VecTrade")
     def test_init_sandbox(self, mock_client_cls) -> None:
-        toolkit = VecTradeToolkit(sandbox=True)
+        VecTradeToolkit(sandbox=True)
         mock_client_cls.assert_called_once_with(api_key=None, sandbox=True)
 
     @patch("vectrade.integrations.VecTrade")

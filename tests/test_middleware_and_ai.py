@@ -1,11 +1,9 @@
 """Tests for middleware classes and async AI stream."""
 
-import time
 from unittest.mock import MagicMock
 
 import pytest
 import respx
-from httpx import Response
 
 from vectrade._middleware import (
     IdempotencyMiddleware,

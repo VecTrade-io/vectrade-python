@@ -1,6 +1,5 @@
 """Tests for streaming classes — Stream, AsyncStream, iter_sse_lines, aiter_sse_lines, parse_sse_data."""
 
-import asyncio
 from unittest.mock import MagicMock
 
 import pytest
@@ -118,7 +117,7 @@ class TestAiterSSELines:
 
         async def _aiter():
             return
-            yield  # noqa: make it an async generator
+            yield  # make it an async generator
 
         mock_response.aiter_lines.return_value = _aiter()
         lines = [line async for line in aiter_sse_lines(mock_response)]
@@ -213,7 +212,7 @@ class TestAsyncStream:
 
         async def _aiter():
             return
-            yield  # noqa: make it an async generator
+            yield  # make it an async generator
 
         mock_response.aiter_lines.return_value = _aiter()
 
