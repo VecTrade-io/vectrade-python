@@ -31,7 +31,7 @@ jobs:
           pip install build twine
           python -m build
           twine check dist/*
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v6
         if: matrix.python-version == '3.12'
         with:
           files: coverage.xml
