@@ -81,7 +81,7 @@ class _BaseClient:
             raise ConfigurationError(
                 "api_key is required. Set the VECTRADE_API_KEY environment variable "
                 "or pass api_key= to the client constructor. "
-                "Get your key at https://app.vectrade.io/keys"
+                "Get your key at https://vectrade.io/vtrade/developer"
             )
 
         self.base_url = resolve_base_url(base_url=base_url, sandbox=sandbox)

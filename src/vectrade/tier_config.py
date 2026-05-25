@@ -111,7 +111,7 @@ DEFAULT_TIERS: dict[str, dict[str, Any]] = {
         "monthly_price_usd": 0,
         "overage_policy": "BLOCK",
         "metering_type": "prompt",
-        "ai_prompts_per_day": 5,
+        "ai_prompts_per_day": 0,
         "monthly_tokens": 0,
         "overage_cap_multiplier": 1.0,
     },
