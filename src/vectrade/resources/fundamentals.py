@@ -42,6 +42,18 @@ class Fundamentals:
         entries = raw.get("earnings", []) if isinstance(raw, dict) else []
         return [BalanceSheet.model_validate(item) for item in entries]
 
+    def statements(self, symbol: str) -> dict:
+        """Get all financial statements (income, balance sheet, cash flow) as raw dict.
+
+        Args:
+            symbol: Stock ticker symbol.
+
+        Returns:
+            Dict with keys: income_statement, balance_sheet, cashflow_statement.
+        """
+        response = self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}/statements")
+        return response.json()
+
 
 class AsyncFundamentals:
     """Asynchronous fundamentals resource."""
@@ -52,6 +64,11 @@ class AsyncFundamentals:
     async def get(self, symbol: str) -> FundamentalResponse:
         response = await self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}")
         return FundamentalResponse.model_validate(response.json())
+
+    async def statements(self, symbol: str) -> dict:
+        """Get all financial statements as raw dict."""
+        response = await self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}/statements")
+        return response.json()
 
     async def income_statement(
         self, symbol: str, *, period: str = "annual"

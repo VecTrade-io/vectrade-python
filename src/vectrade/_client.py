@@ -49,18 +49,18 @@ from vectrade._version import __version__
 
 # Custom attribute name for retry count on httpx.Response objects
 _RETRY_COUNT_ATTR = "_vectrade_retries"
-from vectrade.resources.ai import AI, AsyncAI
 from vectrade.resources.analyst import Analyst, AsyncAnalyst
-from vectrade.resources.developer import AsyncDeveloper, Developer
 from vectrade.resources.earnings import AsyncEarnings, Earnings
+from vectrade.resources.etf import AsyncETF, ETF
 from vectrade.resources.fundamentals import AsyncFundamentals, Fundamentals
+from vectrade.resources.historical import AsyncHistorical, Historical
 from vectrade.resources.insider import AsyncInsider, Insider
 from vectrade.resources.news import AsyncNews, News
 from vectrade.resources.options import AsyncOptions, Options
+from vectrade.resources.profile import AsyncProfile, Profile
 from vectrade.resources.quotes import AsyncQuotes, Quotes
-from vectrade.resources.screener import AsyncScreener, Screener
+from vectrade.resources.sentiment import AsyncSentiment, Sentiment
 from vectrade.resources.technicals import AsyncTechnicals, Technicals
-from vectrade.resources.webhooks import AsyncWebhooks, Webhooks
 
 
 class _BaseClient:
@@ -259,14 +259,14 @@ class VecTrade(_BaseClient):
         self.fundamentals = Fundamentals(_managed)
         self.technicals = Technicals(_managed)
         self.news = News(_managed)
-        self.screener = Screener(_managed)
-        self.ai = AI(_managed)
-        self.webhooks = Webhooks(_managed)
         self.options = Options(_managed)
         self.analyst = Analyst(_managed)
         self.earnings = Earnings(_managed)
         self.insider = Insider(_managed)
-        self.developer = Developer(_managed)
+        self.profile = Profile(_managed)
+        self.sentiment = Sentiment(_managed)
+        self.historical = Historical(_managed)
+        self.etf = ETF(_managed)
 
     def request(
         self,
@@ -443,14 +443,14 @@ class AsyncVecTrade(_BaseClient):
         self.fundamentals = AsyncFundamentals(_managed)
         self.technicals = AsyncTechnicals(_managed)
         self.news = AsyncNews(_managed)
-        self.screener = AsyncScreener(_managed)
-        self.ai = AsyncAI(_managed)
-        self.webhooks = AsyncWebhooks(_managed)
         self.options = AsyncOptions(_managed)
         self.analyst = AsyncAnalyst(_managed)
         self.earnings = AsyncEarnings(_managed)
         self.insider = AsyncInsider(_managed)
-        self.developer = AsyncDeveloper(_managed)
+        self.profile = AsyncProfile(_managed)
+        self.sentiment = AsyncSentiment(_managed)
+        self.historical = AsyncHistorical(_managed)
+        self.etf = AsyncETF(_managed)
 
     async def request(
         self,
