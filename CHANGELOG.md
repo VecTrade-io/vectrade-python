@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-29
+
+### Changed
+
+- **Stable release** — all public APIs finalized, semver enforced from this point
+
+## [0.2.0] - 2026-05-29
+
 ### Fixed
 
 - Options resource: corrected endpoint path to `/vq/options/{symbol}/chain` and response parsing for calls/puts arrays
@@ -41,5 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI: GitHub Actions with Python 3.9–3.13 matrix
 - PyPI trusted publishing workflow
 
-[Unreleased]: https://github.com/VecTrade-io/vectrade-python/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/VecTrade-io/vectrade-python/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/VecTrade-io/vectrade-python/compare/v0.2.0...v1.0.0
+[0.2.0]: https://github.com/VecTrade-io/vectrade-python/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/VecTrade-io/vectrade-python/releases/tag/v0.1.0
