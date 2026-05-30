@@ -246,6 +246,13 @@ dependencies = ["vectrade>=0.1,<0.2"]
 - Python 3.9+
 - No system dependencies — pure Python
 
+## Community
+
+- 💬 [Discord](https://discord.gg/vectrade) — Get help, share projects, discuss features
+- 📖 [Documentation](https://docs.vectrade.io) — Full API reference and guides
+- 🧰 [finkit](https://github.com/VecTrade-io/finkit) — Open-source indicators & risk metrics (no API key needed)
+- 🤖 [MCP Server](https://github.com/VecTrade-io/vectrade-mcp) — Use VecTrade tools in Claude, Cursor, VS Code
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
