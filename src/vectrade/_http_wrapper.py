@@ -56,17 +56,17 @@ class SyncHTTP:
     def get(self, url: str, *, params: Any = None, timeout: float | None = None) -> httpx.Response:
         """Send a GET request with retry and error mapping."""
         response = self._request("GET", url, params=params, timeout=timeout)
-        return _unwrap_success_envelope(response)  # type: ignore[no-any-return]
+        return _unwrap_success_envelope(response)
 
     def post(self, url: str, *, json: Any = None, params: Any = None) -> httpx.Response:
         """Send a POST request with retry and error mapping."""
         response = self._request("POST", url, json=json, params=params)
-        return _unwrap_success_envelope(response)  # type: ignore[no-any-return]
+        return _unwrap_success_envelope(response)
 
     def delete(self, url: str) -> httpx.Response:
         """Send a DELETE request with retry and error mapping."""
         response = self._request("DELETE", url)
-        return _unwrap_success_envelope(response)  # type: ignore[no-any-return]
+        return _unwrap_success_envelope(response)
 
     def stream(self, method: str, url: str, **kwargs: Any) -> Any:
         """Delegate streaming to the raw httpx client (no retry for streams)."""
@@ -87,17 +87,17 @@ class AsyncHTTP:
     ) -> httpx.Response:
         """Send a GET request with retry and error mapping."""
         response = await self._request("GET", url, params=params, timeout=timeout)
-        return _unwrap_success_envelope(response)  # type: ignore[no-any-return]
+        return _unwrap_success_envelope(response)
 
     async def post(self, url: str, *, json: Any = None, params: Any = None) -> httpx.Response:
         """Send a POST request with retry and error mapping."""
         response = await self._request("POST", url, json=json, params=params)
-        return _unwrap_success_envelope(response)  # type: ignore[no-any-return]
+        return _unwrap_success_envelope(response)
 
     async def delete(self, url: str) -> httpx.Response:
         """Send a DELETE request with retry and error mapping."""
         response = await self._request("DELETE", url)
-        return _unwrap_success_envelope(response)  # type: ignore[no-any-return]
+        return _unwrap_success_envelope(response)
 
     def stream(self, method: str, url: str, **kwargs: Any) -> Any:
         """Delegate streaming to the raw httpx client (no retry for streams)."""
