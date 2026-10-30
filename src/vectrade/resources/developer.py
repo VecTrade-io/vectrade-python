@@ -15,10 +15,8 @@ class Developer:
 
     These endpoints manage API keys, view usage, and check quota.
 
-    Note: These endpoints require JWT authentication (session token),
-    not API key authentication. Use ``base_url`` pointing to your
-    VecTrade instance and ensure the client is authenticated via
-    a session token or API key with developer scope.
+    The web portal may authenticate with a session JWT; SDK requests use
+    the configured VQ API key.
     """
 
     def __init__(self, http: SyncHTTP) -> None:

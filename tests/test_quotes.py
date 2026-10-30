@@ -21,11 +21,12 @@ MOCK_QUOTE = {
 }
 
 MOCK_BATCH = {
-    "data": [
-        {**MOCK_QUOTE, "symbol": "AAPL"},
-        {**MOCK_QUOTE, "symbol": "GOOGL", "price": 178.30},
-        {**MOCK_QUOTE, "symbol": "MSFT", "price": 445.60},
-    ]
+    "status": "ok",
+    "data": {
+        "AAPL": {**MOCK_QUOTE, "symbol": "AAPL"},
+        "GOOGL": {**MOCK_QUOTE, "symbol": "GOOGL", "price": 178.30},
+        "MSFT": {**MOCK_QUOTE, "symbol": "MSFT", "price": 445.60},
+    },
 }
 
 
@@ -73,15 +74,21 @@ class TestQuotesBatch:
         assert quotes[0].symbol == "AAPL"
         assert quotes[1].symbol == "GOOGL"
 
-    def test_batch_passes_symbols_param(self, client: VecTrade, mock_api: respx.Router) -> None:
-        """Symbols are comma-joined in query params."""
+    def test_batch_passes_tickers_param(self, client: VecTrade, mock_api: respx.Router) -> None:
+        """The API accepts ticker symbols under the tickers query parameter."""
         route = mock_api.get("/vq/quotes/batch").mock(
             return_value=httpx.Response(200, json=MOCK_BATCH)
         )
         quotes = client.quotes.batch(["AAPL", "GOOGL", "MSFT"])
         request = route.calls[0].request
-        assert "symbols" in str(request.url)
+        assert request.url.params["tickers"] == "AAPL,GOOGL,MSFT"
         assert quotes[2].price == 445.60
+
+    def test_batch_rejects_more_than_twenty_symbols(self, client: VecTrade) -> None:
+        import pytest
+
+        with pytest.raises(ValueError, match="1 and 20"):
+            client.quotes.batch([f"TICKER{i}" for i in range(21)])
 
 
 class TestQuotesPathEncoding:

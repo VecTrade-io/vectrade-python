@@ -15,9 +15,9 @@ class NewsArticle(BaseModel):
     id: str = Field(validation_alias="uuid")
     title: str = Field(validation_alias="headline")
     summary: str | None = None
-    url: str
-    source: str
-    published_at: datetime = Field(validation_alias="datetime")
+    url: str | None = None
+    source: str | None = None
+    published_at: datetime | None = Field(default=None, validation_alias="datetime")
     symbols: list[str] = Field(default_factory=list, validation_alias="related")
     category: str | None = Field(default=None, validation_alias="type")
     sentiment: float | None = None  # -1.0 to 1.0

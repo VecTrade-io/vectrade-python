@@ -38,13 +38,16 @@ class Quotes:
         """Get quotes for multiple symbols in a single request.
 
         Args:
-            symbols: List of ticker symbols (max 50).
+            symbols: List of ticker symbols (max 20).
 
         Returns:
             List of QuoteResponse objects.
         """
-        response = self._http.get("/vq/quotes/batch", params={"symbols": ",".join(symbols)})
-        data = response.json()["data"]
+        if not 1 <= len(symbols) <= 20:
+            raise ValueError("Batch quote requests require between 1 and 20 symbols.")
+        response = self._http.get("/vq/quotes/batch", params={"tickers": ",".join(symbols)})
+        payload = response.json()
+        data = payload.get("data", payload)
         items = data.values() if isinstance(data, dict) else data
         return [QuoteResponse.model_validate(q) for q in items]
 
@@ -66,7 +69,10 @@ class AsyncQuotes:
 
     async def batch(self, symbols: list[str]) -> list[QuoteResponse]:
         """Get quotes for multiple symbols in a single request."""
-        response = await self._http.get("/vq/quotes/batch", params={"symbols": ",".join(symbols)})
-        data = response.json()["data"]
+        if not 1 <= len(symbols) <= 20:
+            raise ValueError("Batch quote requests require between 1 and 20 symbols.")
+        response = await self._http.get("/vq/quotes/batch", params={"tickers": ",".join(symbols)})
+        payload = response.json()
+        data = payload.get("data", payload)
         items = data.values() if isinstance(data, dict) else data
         return [QuoteResponse.model_validate(q) for q in items]

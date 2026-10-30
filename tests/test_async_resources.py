@@ -43,7 +43,7 @@ class TestAsyncQuotes:
     @respx.mock
     @pytest.mark.asyncio
     async def test_batch(self, async_client) -> None:
-        respx.get(f"{BASE_URL}/vq/quotes/batch").respond(
+        route = respx.get(f"{BASE_URL}/vq/quotes/batch").respond(
             200,
             json={
                 "tickers": ["AAPL", "MSFT"],
@@ -82,6 +82,7 @@ class TestAsyncQuotes:
         symbols = {q.symbol for q in quotes}
         assert "AAPL" in symbols
         assert "MSFT" in symbols
+        assert route.calls[0].request.url.params["tickers"] == "AAPL,MSFT"
 
 
 class TestAsyncFundamentals:
@@ -135,8 +136,34 @@ class TestAsyncTechnicals:
 class TestAsyncNews:
     @respx.mock
     @pytest.mark.asyncio
+    async def test_list_unwraps_vq_envelope(self, async_client) -> None:
+        respx.get(f"{BASE_URL}/vq/news/AAPL?limit=20").respond(
+            200,
+            json={
+                "status": "ok",
+                "data": {
+                    "articles": [
+                        {
+                            "uuid": "wrapped-article",
+                            "headline": "Wrapped payload",
+                            "url": "https://example.com/wrapped",
+                            "source": "Reuters",
+                            "datetime": "2026-10-28T12:00:00Z",
+                        }
+                    ]
+                },
+            },
+        )
+
+        articles = await async_client.news.list("AAPL")
+
+        assert articles[0].id == "wrapped-article"
+        assert articles[0].title == "Wrapped payload"
+
+    @respx.mock
+    @pytest.mark.asyncio
     async def test_list(self, async_client) -> None:
-        respx.get(f"{BASE_URL}/vq/news/AAPL").respond(
+        respx.get(f"{BASE_URL}/vq/news/AAPL?limit=5").respond(
             200,
             json={
                 "articles": [
@@ -155,6 +182,26 @@ class TestAsyncNews:
         articles = await async_client.news.list("AAPL", limit=5)
         assert len(articles) == 1
         assert articles[0].title == "Apple Hits All-Time High"
+
+    @respx.mock
+    @pytest.mark.asyncio
+    async def test_get_article(self, async_client) -> None:
+        respx.get(f"{BASE_URL}/vq/news/articles/news-123").respond(
+            200,
+            json={
+                "uuid": "news-123",
+                "headline": "Apple earnings",
+                "url": "https://example.com/news-123",
+                "source": "Reuters",
+                "datetime": "2026-10-28T12:00:00Z",
+                "related": ["AAPL"],
+            },
+        )
+
+        article = await async_client.news.get_article("news-123")
+
+        assert article.id == "news-123"
+        assert article.title == "Apple earnings"
 
 
 class TestAsyncEarnings:
@@ -457,9 +504,10 @@ class TestAsyncScreener:
     @respx.mock
     @pytest.mark.asyncio
     async def test_run(self, async_client) -> None:
-        respx.post(f"{BASE_URL}/vq/screener/filter").respond(
+        respx.get(f"{BASE_URL}/vq/screener").respond(
             200,
             json={
+                "status": "ok",
                 "data": [
                     {
                         "symbol": "NVDA",
@@ -469,7 +517,7 @@ class TestAsyncScreener:
                         "market_cap": 5.4e12,
                     }
                 ],
-                "page_info": {"has_next": False, "cursor": None, "total": 1},
+                "page_info": {"has_next": False, "cursor": None},
             },
         )
         results = []

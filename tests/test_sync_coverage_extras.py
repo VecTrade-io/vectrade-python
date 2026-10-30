@@ -124,9 +124,10 @@ class TestScreenerSyncExtras:
 
     @respx.mock
     def test_run_with_all_filters(self, client) -> None:
-        respx.post(f"{BASE_URL}/vq/screener/filter").respond(
+        respx.get(f"{BASE_URL}/vq/screener").respond(
             200,
             json={
+                "status": "ok",
                 "data": [
                     {
                         "symbol": "AAPL",
@@ -136,7 +137,7 @@ class TestScreenerSyncExtras:
                         "market_cap": 3e12,
                     }
                 ],
-                "page_info": {"has_next": False, "cursor": None, "total": 1},
+                "page_info": {"has_next": False, "cursor": None},
             },
         )
         results = list(
@@ -156,11 +157,12 @@ class TestScreenerSyncExtras:
     @respx.mock
     def test_run_paginated(self, client) -> None:
         """Test that pagination works when there are multiple pages."""
-        respx.post(f"{BASE_URL}/vq/screener/filter").mock(
+        respx.get(f"{BASE_URL}/vq/screener").mock(
             side_effect=[
                 Response(
                     200,
                     json={
+                        "status": "ok",
                         "data": [
                             {
                                 "symbol": "AAPL",
@@ -172,14 +174,14 @@ class TestScreenerSyncExtras:
                         ],
                         "page_info": {
                             "has_next": True,
-                            "cursor": "cursor_abc",
-                            "total": 2,
+                            "cursor": "1",
                         },
                     },
                 ),
                 Response(
                     200,
                     json={
+                        "status": "ok",
                         "data": [
                             {
                                 "symbol": "MSFT",
@@ -192,7 +194,6 @@ class TestScreenerSyncExtras:
                         "page_info": {
                             "has_next": False,
                             "cursor": None,
-                            "total": 2,
                         },
                     },
                 ),
@@ -206,11 +207,12 @@ class TestScreenerSyncExtras:
 
     @respx.mock
     def test_run_empty_results(self, client) -> None:
-        respx.post(f"{BASE_URL}/vq/screener/filter").respond(
+        respx.get(f"{BASE_URL}/vq/screener").respond(
             200,
             json={
+                "status": "ok",
                 "data": [],
-                "page_info": {"has_next": False, "cursor": None, "total": 0},
+                "page_info": {"has_next": False, "cursor": None},
             },
         )
         results = list(client.screener.run(sector="NonExistent"))

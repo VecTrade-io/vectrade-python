@@ -1,5 +1,7 @@
 """Tests for the developer resource."""
 
+import json
+
 import pytest
 import respx
 
@@ -28,7 +30,7 @@ class TestDeveloper:
 
     @respx.mock
     def test_create_key(self, client: VecTrade) -> None:
-        respx.post(f"{BASE_URL}/vq/developer/keys").respond(
+        route = respx.post(f"{BASE_URL}/vq/developer/keys").respond(
             201,
             json={
                 "id": "key-new",
@@ -39,6 +41,7 @@ class TestDeveloper:
         )
         key = client.developer.create_key(label="ci", scopes=["read"])
         assert key["id"] == "key-new"
+        assert json.loads(route.calls[0].request.content)["scopes"] == ["read"]
 
     @respx.mock
     def test_revoke_key(self, client: VecTrade) -> None:

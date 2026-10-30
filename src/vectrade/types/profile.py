@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -35,4 +37,4 @@ class ProfileResponse(BaseModel):
     source: str | None = None
     company: CompanyInfo | None = None
     location: LocationInfo | None = None
-    overview: dict | None = None
+    overview: dict[str, Any] | None = None

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -33,5 +35,5 @@ class ETFResponse(BaseModel):
     fifty_two_week_low: float | None = None
     average_volume: int | None = None
     volume: int | None = None
-    top_holdings: list[dict] | None = None
-    sector_weights: dict | None = None
+    top_holdings: list[dict[str, Any]] | None = None
+    sector_weights: dict[str, Any] | None = None

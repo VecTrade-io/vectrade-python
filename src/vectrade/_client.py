@@ -46,12 +46,16 @@ from vectrade._utils.retry import (
     should_retry,
 )
 from vectrade._version import __version__
+from vectrade.resources.ai import AI, AsyncAI
+from vectrade.resources.developer import AsyncDeveloper, Developer
+from vectrade.resources.screener import AsyncScreener, Screener
+from vectrade.resources.webhooks import AsyncWebhooks, Webhooks
 
 # Custom attribute name for retry count on httpx.Response objects
 _RETRY_COUNT_ATTR = "_vectrade_retries"
 from vectrade.resources.analyst import Analyst, AsyncAnalyst
 from vectrade.resources.earnings import AsyncEarnings, Earnings
-from vectrade.resources.etf import AsyncETF, ETF
+from vectrade.resources.etf import ETF, AsyncETF
 from vectrade.resources.fundamentals import AsyncFundamentals, Fundamentals
 from vectrade.resources.historical import AsyncHistorical, Historical
 from vectrade.resources.insider import AsyncInsider, Insider
@@ -255,10 +259,14 @@ class VecTrade(_BaseClient):
 
         # Resource namespaces — routed through retry + error mapping pipeline
         _managed = SyncHTTP(self.request, self._http)
+        self.ai = AI(_managed)
+        self.developer = Developer(_managed)
         self.quotes = Quotes(_managed)
         self.fundamentals = Fundamentals(_managed)
         self.technicals = Technicals(_managed)
         self.news = News(_managed)
+        self.screener = Screener(_managed)
+        self.webhooks = Webhooks(_managed)
         self.options = Options(_managed)
         self.analyst = Analyst(_managed)
         self.earnings = Earnings(_managed)
@@ -439,10 +447,14 @@ class AsyncVecTrade(_BaseClient):
 
         # Resource namespaces — routed through retry + error mapping pipeline
         _managed = AsyncHTTP(self.request, self._http)
+        self.ai = AsyncAI(_managed)
+        self.developer = AsyncDeveloper(_managed)
         self.quotes = AsyncQuotes(_managed)
         self.fundamentals = AsyncFundamentals(_managed)
         self.technicals = AsyncTechnicals(_managed)
         self.news = AsyncNews(_managed)
+        self.screener = AsyncScreener(_managed)
+        self.webhooks = AsyncWebhooks(_managed)
         self.options = AsyncOptions(_managed)
         self.analyst = AsyncAnalyst(_managed)
         self.earnings = AsyncEarnings(_managed)

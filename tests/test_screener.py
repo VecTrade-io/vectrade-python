@@ -19,9 +19,10 @@ def client(monkeypatch: pytest.MonkeyPatch) -> VecTrade:
 class TestScreener:
     @respx.mock
     def test_run_returns_paginator(self, client: VecTrade) -> None:
-        respx.post(f"{BASE_URL}/vq/screener/filter").respond(
+        respx.get(f"{BASE_URL}/vq/screener").respond(
             200,
             json={
+                "status": "ok",
                 "data": [
                     {
                         "symbol": "AAPL",
@@ -29,6 +30,8 @@ class TestScreener:
                         "price": 195.0,
                         "change_pct": 1.3,
                         "market_cap": 3e12,
+                        "beta": 1.24,
+                        "revenue_growth_yoy": 8.5,
                     },
                     {
                         "symbol": "MSFT",
@@ -38,21 +41,24 @@ class TestScreener:
                         "market_cap": 2.8e12,
                     },
                 ],
-                "page_info": {"has_next": False, "cursor": None, "total": 2},
+                "page_info": {"has_next": False, "cursor": None},
             },
         )
         results = list(client.screener.run(sector="Technology", limit=10))
         assert len(results) == 2
         assert results[0].symbol == "AAPL"
+        assert results[0].beta == 1.24
+        assert results[0].revenue_growth_yoy == 8.5
 
     @respx.mock
     def test_run_paginates(self, client: VecTrade) -> None:
         # Page 1
-        respx.post(f"{BASE_URL}/vq/screener/filter").mock(
+        respx.get(f"{BASE_URL}/vq/screener").mock(
             side_effect=[
                 respx.MockResponse(
                     200,
                     json={
+                        "status": "ok",
                         "data": [
                             {
                                 "symbol": "AAPL",
@@ -62,12 +68,13 @@ class TestScreener:
                                 "market_cap": 3e12,
                             }
                         ],
-                        "page_info": {"has_next": True, "cursor": "c1", "total": 2},
+                        "page_info": {"has_next": True, "cursor": "1"},
                     },
                 ),
                 respx.MockResponse(
                     200,
                     json={
+                        "status": "ok",
                         "data": [
                             {
                                 "symbol": "MSFT",
@@ -77,7 +84,7 @@ class TestScreener:
                                 "market_cap": 2.8e12,
                             }
                         ],
-                        "page_info": {"has_next": False, "cursor": None, "total": 2},
+                        "page_info": {"has_next": False, "cursor": None},
                     },
                 ),
             ]

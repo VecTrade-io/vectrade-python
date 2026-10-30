@@ -117,7 +117,7 @@ async with AsyncVecTrade() as vt:
 | `client.quotes` | Real-time and historical price quotes |
 | `client.fundamentals` | Financial statements, ratios, company profiles |
 | `client.technicals` | Technical indicators (RSI, MACD, Bollinger, etc.) |
-| `client.news` | Market news and sentiment |
+| `client.news` | `list(symbol, limit=20)`, `get_article(article_id)` |
 | `client.earnings` | Earnings reports and estimates |
 | `client.analyst` | Analyst ratings and price targets |
 | `client.insider` | Insider trading activity |
@@ -126,6 +126,12 @@ async with AsyncVecTrade() as vt:
 | `client.webhooks` | Webhook management for real-time alerts |
 | `client.developer` | API key and usage management |
 | `client.ai` | AI-powered streaming analysis |
+| `client.profile` | `get(symbol)` |
+| `client.sentiment` | `get(symbol)` |
+| `client.historical` | `get(symbol, period="5d")` |
+| `client.etf` | `get(symbol)` |
+
+The screener returns an auto-paginating iterator. For example, `client.screener.run(pe_max=20, sector="Technology", limit=50)` yields typed `ScreenerResult` objects; use `AsyncVecTrade` and `async for` for async use. News `list(symbol, limit=20)` returns a list and does not use cursor pagination.
 
 ## Configuration
 

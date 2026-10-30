@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from vectrade._utils.encoding import encode_path_param
 from vectrade.types.fundamental import BalanceSheet, FundamentalResponse, IncomeStatement
@@ -42,7 +42,7 @@ class Fundamentals:
         entries = raw.get("earnings", []) if isinstance(raw, dict) else []
         return [BalanceSheet.model_validate(item) for item in entries]
 
-    def statements(self, symbol: str) -> dict:
+    def statements(self, symbol: str) -> dict[str, Any]:
         """Get all financial statements (income, balance sheet, cash flow) as raw dict.
 
         Args:
@@ -52,7 +52,7 @@ class Fundamentals:
             Dict with keys: income_statement, balance_sheet, cashflow_statement.
         """
         response = self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}/statements")
-        return response.json()
+        return cast(dict[str, Any], response.json())
 
 
 class AsyncFundamentals:
@@ -65,10 +65,10 @@ class AsyncFundamentals:
         response = await self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}")
         return FundamentalResponse.model_validate(response.json())
 
-    async def statements(self, symbol: str) -> dict:
+    async def statements(self, symbol: str) -> dict[str, Any]:
         """Get all financial statements as raw dict."""
         response = await self._http.get(f"/vq/fundamentals/{encode_path_param(symbol)}/statements")
-        return response.json()
+        return cast(dict[str, Any], response.json())
 
     async def income_statement(
         self, symbol: str, *, period: str = "annual"

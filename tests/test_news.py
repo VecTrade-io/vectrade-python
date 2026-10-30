@@ -18,8 +18,33 @@ def client(monkeypatch: pytest.MonkeyPatch) -> VecTrade:
 
 class TestNews:
     @respx.mock
+    def test_list_unwraps_vq_envelope(self, client: VecTrade) -> None:
+        respx.get(f"{BASE_URL}/vq/news/AAPL?limit=20").respond(
+            200,
+            json={
+                "status": "ok",
+                "data": {
+                    "articles": [
+                        {
+                            "uuid": "wrapped-article",
+                            "headline": "Wrapped payload",
+                            "url": "https://example.com/wrapped",
+                            "source": "Reuters",
+                            "datetime": "2026-10-28T12:00:00Z",
+                        }
+                    ]
+                },
+            },
+        )
+
+        articles = client.news.list("AAPL")
+
+        assert articles[0].id == "wrapped-article"
+        assert articles[0].title == "Wrapped payload"
+
+    @respx.mock
     def test_list_news(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/news/AAPL").respond(
+        respx.get(f"{BASE_URL}/vq/news/AAPL?limit=20").respond(
             200,
             json={
                 "articles": [
@@ -54,7 +79,7 @@ class TestNews:
 
     @respx.mock
     def test_list_with_limit(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/news/AAPL").respond(
+        respx.get(f"{BASE_URL}/vq/news/AAPL?limit=3").respond(
             200,
             json={
                 "articles": [
@@ -74,9 +99,52 @@ class TestNews:
 
     @respx.mock
     def test_get_delegates_to_list(self, client: VecTrade) -> None:
-        respx.get(f"{BASE_URL}/vq/news/TSLA").respond(
+        respx.get(f"{BASE_URL}/vq/news/TSLA?limit=20").respond(
             200,
             json={"articles": []},
         )
         articles = client.news.get("TSLA")
         assert articles == []
+
+    @respx.mock
+    def test_list_accepts_missing_historical_fields(self, client: VecTrade) -> None:
+        respx.get(f"{BASE_URL}/vq/news/TSLA?limit=20").respond(
+            200,
+            json={
+                "articles": [
+                    {
+                        "uuid": "old-article",
+                        "headline": "Historical article",
+                        "url": None,
+                        "source": None,
+                        "datetime": None,
+                    }
+                ]
+            },
+        )
+
+        articles = client.news.list("TSLA")
+
+        assert articles[0].url is None
+        assert articles[0].source is None
+        assert articles[0].published_at is None
+
+    @respx.mock
+    def test_get_article(self, client: VecTrade) -> None:
+        respx.get(f"{BASE_URL}/vq/news/articles/news-123").respond(
+            200,
+            json={
+                "uuid": "news-123",
+                "headline": "Apple earnings",
+                "url": "https://example.com/news-123",
+                "source": "Reuters",
+                "datetime": "2026-10-28T12:00:00Z",
+                "related": ["AAPL"],
+            },
+        )
+
+        article = client.news.get_article("news-123")
+
+        assert article.id == "news-123"
+        assert article.title == "Apple earnings"
+        assert article.symbols == ["AAPL"]

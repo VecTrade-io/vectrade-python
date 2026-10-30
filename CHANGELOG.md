@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Client resource namespaces** — expose AI, developer, screener, and webhook resources on sync and async clients.
+
+### Fixed
+
+- **Optional telemetry type checking** — ignore missing OpenTelemetry package roots when the optional extra is not installed.
+- **Strict type annotations** — parameterize raw profile, ETF, and financial-statement dictionaries.
+- **News response compatibility** — forward requested limits, accept nullable historical fields, and expose sync/async article-by-ID retrieval.
+
 ## [1.0.0] - 2026-05-29
 
 ### Changed

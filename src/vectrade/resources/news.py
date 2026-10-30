@@ -30,7 +30,7 @@ class News:
             symbol: Ticker symbol (e.g., "AAPL").
             limit: Number of articles to return (max 100).
         """
-        response = self._http.get(f"/vq/news/{encode_path_param(symbol)}")
+        response = self._http.get(f"/vq/news/{encode_path_param(symbol)}?limit={limit}")
         data = response.json()
         articles = data.get("articles", [])[:limit]
         return [NewsArticle.model_validate(item) for item in articles]
@@ -38,6 +38,11 @@ class News:
     def get(self, symbol: str) -> builtins.list[NewsArticle]:
         """Get news articles for a symbol."""
         return self.list(symbol)
+
+    def get_article(self, article_id: str) -> NewsArticle:
+        """Get one previously collected article by its provider UUID."""
+        response = self._http.get(f"/vq/news/articles/{encode_path_param(article_id)}")
+        return NewsArticle.model_validate(response.json())
 
 
 class AsyncNews:
@@ -53,7 +58,7 @@ class AsyncNews:
         limit: int = 20,
     ) -> builtins.list[NewsArticle]:
         """Get latest financial news for a symbol."""
-        response = await self._http.get(f"/vq/news/{encode_path_param(symbol)}")
+        response = await self._http.get(f"/vq/news/{encode_path_param(symbol)}?limit={limit}")
         data = response.json()
         articles = data.get("articles", [])[:limit]
         return [NewsArticle.model_validate(item) for item in articles]
@@ -61,3 +66,8 @@ class AsyncNews:
     async def get(self, symbol: str) -> builtins.list[NewsArticle]:
         """Get news articles for a symbol."""
         return await self.list(symbol)
+
+    async def get_article(self, article_id: str) -> NewsArticle:
+        """Get one previously collected article by its provider UUID."""
+        response = await self._http.get(f"/vq/news/articles/{encode_path_param(article_id)}")
+        return NewsArticle.model_validate(response.json())

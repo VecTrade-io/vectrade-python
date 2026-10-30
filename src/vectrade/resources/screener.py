@@ -25,19 +25,28 @@ class Screener:
         pe_max: float | None = None,
         pe_min: float | None = None,
         dividend_yield_min: float | None = None,
+        dividend_yield_max: float | None = None,
+        change_min: float | None = None,
+        change_max: float | None = None,
+        beta_min: float | None = None,
+        beta_max: float | None = None,
+        revenue_growth_min: float | None = None,
+        revenue_growth_max: float | None = None,
+        rsi_min: float | None = None,
+        rsi_max: float | None = None,
+        volume_min: int | None = None,
         sector: str | None = None,
-        industry: str | None = None,
-        country: str = "US",
         sort_by: str = "market_cap",
         sort_order: str = "desc",
-        limit: int = 50,
+        limit: int = 20,
     ) -> SyncPaginator[ScreenerResult]:
         """Run a stock screener with custom filters.
 
         Returns an auto-paginating iterator over results.
         """
+        if not 1 <= limit <= 50:
+            raise ValueError("Screener limit must be between 1 and 50.")
         filters: dict[str, Any] = {
-            "country": country,
             "sort_by": sort_by,
             "sort_order": sort_order,
             "limit": limit,
@@ -52,16 +61,34 @@ class Screener:
             filters["pe_min"] = pe_min
         if dividend_yield_min is not None:
             filters["dividend_yield_min"] = dividend_yield_min
+        if dividend_yield_max is not None:
+            filters["dividend_yield_max"] = dividend_yield_max
+        if change_min is not None:
+            filters["change_min"] = change_min
+        if change_max is not None:
+            filters["change_max"] = change_max
+        if beta_min is not None:
+            filters["beta_min"] = beta_min
+        if beta_max is not None:
+            filters["beta_max"] = beta_max
+        if revenue_growth_min is not None:
+            filters["revenue_growth_min"] = revenue_growth_min
+        if revenue_growth_max is not None:
+            filters["revenue_growth_max"] = revenue_growth_max
+        if rsi_min is not None:
+            filters["rsi_min"] = rsi_min
+        if rsi_max is not None:
+            filters["rsi_max"] = rsi_max
+        if volume_min is not None:
+            filters["volume_min"] = volume_min
         if sector:
             filters["sector"] = sector
-        if industry:
-            filters["industry"] = industry
 
         def fetch_page(cursor: str | None = None) -> dict[str, Any]:
-            body = {**filters}
+            params = {key: str(value) for key, value in filters.items()}
             if cursor:
-                body["cursor"] = cursor
-            response = self._http.post("/vq/screener/filter", json=body)
+                params["cursor"] = cursor
+            response = self._http.get("/vq/screener", params=params)
             return response.json()  # type: ignore[no-any-return]
 
         return SyncPaginator(fetch_page=fetch_page, model=ScreenerResult)
@@ -81,16 +108,25 @@ class AsyncScreener:
         pe_max: float | None = None,
         pe_min: float | None = None,
         dividend_yield_min: float | None = None,
+        dividend_yield_max: float | None = None,
+        change_min: float | None = None,
+        change_max: float | None = None,
+        beta_min: float | None = None,
+        beta_max: float | None = None,
+        revenue_growth_min: float | None = None,
+        revenue_growth_max: float | None = None,
+        rsi_min: float | None = None,
+        rsi_max: float | None = None,
+        volume_min: int | None = None,
         sector: str | None = None,
-        industry: str | None = None,
-        country: str = "US",
         sort_by: str = "market_cap",
         sort_order: str = "desc",
-        limit: int = 50,
+        limit: int = 20,
     ) -> AsyncPaginator[ScreenerResult]:
         """Run a stock screener with custom filters."""
+        if not 1 <= limit <= 50:
+            raise ValueError("Screener limit must be between 1 and 50.")
         filters: dict[str, Any] = {
-            "country": country,
             "sort_by": sort_by,
             "sort_order": sort_order,
             "limit": limit,
@@ -105,16 +141,34 @@ class AsyncScreener:
             filters["pe_min"] = pe_min
         if dividend_yield_min is not None:
             filters["dividend_yield_min"] = dividend_yield_min
+        if dividend_yield_max is not None:
+            filters["dividend_yield_max"] = dividend_yield_max
+        if change_min is not None:
+            filters["change_min"] = change_min
+        if change_max is not None:
+            filters["change_max"] = change_max
+        if beta_min is not None:
+            filters["beta_min"] = beta_min
+        if beta_max is not None:
+            filters["beta_max"] = beta_max
+        if revenue_growth_min is not None:
+            filters["revenue_growth_min"] = revenue_growth_min
+        if revenue_growth_max is not None:
+            filters["revenue_growth_max"] = revenue_growth_max
+        if rsi_min is not None:
+            filters["rsi_min"] = rsi_min
+        if rsi_max is not None:
+            filters["rsi_max"] = rsi_max
+        if volume_min is not None:
+            filters["volume_min"] = volume_min
         if sector:
             filters["sector"] = sector
-        if industry:
-            filters["industry"] = industry
 
         async def fetch_page(cursor: str | None = None) -> dict[str, Any]:
-            body = {**filters}
+            params = {key: str(value) for key, value in filters.items()}
             if cursor:
-                body["cursor"] = cursor
-            response = await self._http.post("/vq/screener/filter", json=body)
+                params["cursor"] = cursor
+            response = await self._http.get("/vq/screener", params=params)
             return response.json()  # type: ignore[no-any-return]
 
         return AsyncPaginator(fetch_page=fetch_page, model=ScreenerResult)
