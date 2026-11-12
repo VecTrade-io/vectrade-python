@@ -169,3 +169,35 @@ class TestWebhookCRUD:
 
         client.webhooks.delete("wh_123")
         assert route.called
+
+
+class TestWebhookApiShape:
+    """Parse the camelCase shape served by the VecTrade API."""
+
+    def test_create_parses_api_response_and_sends_symbols(
+        self, client: VecTrade, mock_api: respx.Router
+    ) -> None:
+        route = mock_api.post("/vq/webhooks").mock(
+            return_value=httpx.Response(
+                201,
+                json={
+                    "id": "0b6f5b4e-0000-4000-8000-000000000001",
+                    "url": "https://example.com/webhook",
+                    "description": None,
+                    "events": ["quote.update"],
+                    "symbols": ["AAPL"],
+                    "secret": "whsec_abc",
+                    "active": True,
+                    "createdAt": "2026-11-11T12:00:00+00:00",
+                },
+            )
+        )
+
+        result = client.webhooks.create(
+            url="https://example.com/webhook", events=["quote.update"], symbols=["AAPL"]
+        )
+
+        assert json.loads(route.calls.last.request.content)["symbols"] == ["AAPL"]
+        assert result.symbols == ["AAPL"]
+        assert result.secret == "whsec_abc"  # noqa: S105
+        assert result.created_at.year == 2026

@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Multi-asset quote parsing** - BTC/ETH quotes accept unavailable absolute change and previous-close values as `None`, and retain provider market metadata.
+- **Calendar response envelopes** - sync and async calendar methods accept unwrapped lists as well as legacy data wrappers.
+- **Webhook response alignment** - parse camelCase creation timestamps and calendar fields, and expose optional webhook symbol filters.
 - **Optional telemetry type checking** — ignore missing OpenTelemetry package roots when the optional extra is not installed.
 - **Strict type annotations** — parameterize raw profile, ETF, and financial-statement dictionaries.
 - **News response compatibility** — forward requested limits, accept nullable historical fields, and expose sync/async article-by-ID retrieval.

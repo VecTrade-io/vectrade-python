@@ -51,7 +51,9 @@ class Earnings:
             params["to"] = to_date
 
         response = self._http.get("/vq/earnings/calendar", params=params)
-        return [EarningsCalendarEntry.model_validate(e) for e in response.json()["data"]]
+        payload = response.json()
+        entries = payload["data"] if isinstance(payload, dict) else payload
+        return [EarningsCalendarEntry.model_validate(e) for e in entries]
 
 
 class AsyncEarnings:
@@ -78,4 +80,6 @@ class AsyncEarnings:
             params["to"] = to_date
 
         response = await self._http.get("/vq/earnings/calendar", params=params)
-        return [EarningsCalendarEntry.model_validate(e) for e in response.json()["data"]]
+        payload = response.json()
+        entries = payload["data"] if isinstance(payload, dict) else payload
+        return [EarningsCalendarEntry.model_validate(e) for e in entries]

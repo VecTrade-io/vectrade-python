@@ -19,6 +19,29 @@ async def async_client(monkeypatch: pytest.MonkeyPatch):
 class TestAsyncQuotes:
     @respx.mock
     @pytest.mark.asyncio
+    @pytest.mark.parametrize("symbol", ["BTC-USD", "ETH-USD"])
+    async def test_crypto_fields_remain_unavailable(self, async_client, symbol) -> None:
+        payload = {
+            "ticker": symbol,
+            "price": 60000,
+            "change_percent": 1.5,
+            "volume": 1000,
+            "high": 61000,
+            "low": 59000,
+            "open": 59500,
+            "market": "crypto",
+            "timestamp": "2026-11-12T12:00:00Z",
+        }
+        respx.get(f"{BASE_URL}/vq/quotes/{symbol}").respond(
+            200, json={"status": "ok", "data": payload}
+        )
+        quote = await async_client.quotes.get(symbol)
+        assert quote.change is None
+        assert quote.previous_close is None
+        assert quote.market == "crypto"
+
+    @respx.mock
+    @pytest.mark.asyncio
     async def test_get(self, async_client) -> None:
         respx.get(f"{BASE_URL}/vq/quotes/AAPL").respond(
             200,
@@ -205,6 +228,23 @@ class TestAsyncNews:
 
 
 class TestAsyncEarnings:
+    @respx.mock
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", ["ok", "degraded"])
+    async def test_calendar_accepts_unwrapped_list(self, async_client, status) -> None:
+        entry = {
+            "symbol": "CSCO",
+            "date": "2026-11-12",
+            "companyName": "Cisco",
+            "epsEstimate": 1.33,
+        }
+        respx.get(f"{BASE_URL}/vq/earnings/calendar").respond(
+            200, json={"status": status, "data": [entry]}
+        )
+        entries = await async_client.earnings.calendar()
+        assert entries[0].company_name == "Cisco"
+        assert entries[0].eps_estimate == 1.33
+
     @respx.mock
     @pytest.mark.asyncio
     async def test_history(self, async_client) -> None:

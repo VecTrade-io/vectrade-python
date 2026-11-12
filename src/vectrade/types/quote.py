@@ -14,12 +14,13 @@ class QuoteResponse(BaseModel):
 
     symbol: str = Field(validation_alias="ticker")
     price: float
-    change: float
+    change: float | None = None
     change_pct: float = Field(validation_alias="change_percent")
     volume: int
     day_high: float = Field(validation_alias="high")
     day_low: float = Field(validation_alias="low")
     day_open: float = Field(validation_alias="open")
-    previous_close: float = Field(validation_alias="prevClose")
+    previous_close: float | None = Field(None, validation_alias="prevClose")
     market_cap: float | None = None
+    market: str | None = None
     timestamp: datetime

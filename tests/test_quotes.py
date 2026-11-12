@@ -1,6 +1,7 @@
 """Tests for quotes resource using respx mocking."""
 
 import httpx
+import pytest
 import respx
 
 from vectrade import VecTrade
@@ -32,6 +33,31 @@ MOCK_BATCH = {
 
 class TestQuotesGet:
     """Test single quote retrieval."""
+
+    @pytest.mark.parametrize("symbol", ["BTC-USD", "ETH-USD"])
+    def test_crypto_quote_preserves_unavailable_values(
+        self, client: VecTrade, mock_api: respx.Router, symbol: str
+    ) -> None:
+        payload = {
+            "ticker": symbol,
+            "price": 60000,
+            "change_percent": 1.5,
+            "volume": 1000,
+            "high": 61000,
+            "low": 59000,
+            "open": 59500,
+            "market": "crypto",
+            "timestamp": "2026-11-12T12:00:00Z",
+        }
+        mock_api.get(f"/vq/quotes/{symbol}").mock(
+            return_value=httpx.Response(200, json={"status": "ok", "data": payload})
+        )
+        quote = client.quotes.get(symbol)
+        assert quote.symbol == symbol
+        assert quote.change is None
+        assert quote.previous_close is None
+        assert quote.change_pct == 1.5
+        assert quote.market == "crypto"
 
     def test_get_quote(self, client: VecTrade, mock_api: respx.Router) -> None:
         """Successfully fetches a single quote."""

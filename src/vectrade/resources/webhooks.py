@@ -26,12 +26,19 @@ class Webhooks:
         self._http = http
 
     def create(
-        self, *, url: str, events: list[str], description: str | None = None
+        self,
+        *,
+        url: str,
+        events: list[str],
+        description: str | None = None,
+        symbols: list[str] | None = None,
     ) -> WebhookSubscription:
         """Create a webhook subscription."""
         body: dict[str, Any] = {"url": url, "events": events}
         if description:
             body["description"] = description
+        if symbols:
+            body["symbols"] = symbols
         response = self._http.post("/vq/webhooks", json=body)
         return WebhookSubscription.model_validate(response.json())
 
@@ -95,11 +102,18 @@ class AsyncWebhooks:
         self._http = http
 
     async def create(
-        self, *, url: str, events: list[str], description: str | None = None
+        self,
+        *,
+        url: str,
+        events: list[str],
+        description: str | None = None,
+        symbols: list[str] | None = None,
     ) -> WebhookSubscription:
         body: dict[str, Any] = {"url": url, "events": events}
         if description:
             body["description"] = description
+        if symbols:
+            body["symbols"] = symbols
         response = await self._http.post("/vq/webhooks", json=body)
         return WebhookSubscription.model_validate(response.json())
 
